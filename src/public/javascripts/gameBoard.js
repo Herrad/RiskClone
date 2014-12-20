@@ -18,7 +18,8 @@ $(document).ready(function(){
 
 		if(sourceTile && !target.hasClass(playerList[currentTurn].colour)){
 			attack(target);
-		} else {
+		} 
+		if(target.hasClass(playerList[currentTurn].colour)) {
 			setSourceTile(target);
 		}
 	});
@@ -31,11 +32,13 @@ $(document).ready(function(){
 		}
 		clearSourceTile();
 
-		highlightCuurrentPlayer();
+		highlightCurrentPlayer();
 	});
 
 	function attack(target){
-
+		if(getSurroundings().contains(target)){
+			alert('attack!');
+		}
 	}
 
 	function setSourceTile(target){
@@ -80,11 +83,20 @@ $(document).ready(function(){
 				surroundings[k] = null;
 			}
 		}
+		surroundings.contains = function(target){
+			for(var k in surroundings){
+				var surrounding = $(surroundings[k]);
+				if(surrounding && surrounding.data('x') == target.data('x') && surrounding.data('y') == target.data('y')){
+					return true;
+				}
+			}
+			return false;
+		}
 
 		return surroundings;
 	}
 
-	function highlightCuurrentPlayer(){
+	function highlightCurrentPlayer(){
 		$('.players span').css('background', 'white')
 		var currentColour = playerList[currentTurn].colour;
 		$('.players .'+currentColour).css('background', currentColour);
