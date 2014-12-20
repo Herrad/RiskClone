@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  padding: 0 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   font-size:18px;
 }
@@ -7,7 +7,7 @@ body {
 table{border-collapse: collapse;}
 td{width: 75px; height: 75px;border: 1px solid black;text-align: center;font-size:18px;background: white;}
 
-.players {float:left;margin: 20px auto ;width:830px;}
+.players {float:left;margin: 0 auto 20px auto ;width:830px;}
 .players span {float:left;width:21%;margin-left:20px;text-align: center;}
 .players span.purple{border:1px solid purple;}
 .players span.green{border:1px solid green;}
@@ -20,3 +20,5 @@ td.purple{background: purple;}
 td.green{background: green;}
 td.orange{background: orange;}
 td.blue{background: blue;}
+
+.endTurn {margin:20px auto;padding:10px 0;width:800px;font-size: 18px;}

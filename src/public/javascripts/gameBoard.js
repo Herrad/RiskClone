@@ -1,37 +1,56 @@
 $(document).ready(function(){
 	var selectors = {
-		allTiles:'td'
+		allTiles:'td',
+		endTurn: '.endTurn'
 	},
-	sourceTile = null;
+	sourceTile = null,
+	playerList = [
+		{colour:'purple'},
+		{colour:'green'},
+		{colour:'red'},
+		{colour:'orange'}
+	],
+	currentTurn = 0;
 
 	$(selectors.allTiles).click(function(e){
-		var target = $(e.target),
+		if(currentTurn > 0) return;
+		var target = $(e.target);
+
+		if(sourceTile && !target.hasClass(playerList[currentTurn].colour)){
+			attack(target);
+		} else {
+			setSourceTile(target);
+		}
+	});
+
+	$(selectors.endTurn).click(function(){
+
+		currentTurn++;
+		if(currentTurn >= playerList.length){
+			currentTurn = 0;
+		}
+		clearSourceTile();
+
+		highlightCuurrentPlayer();
+	});
+
+	function attack(target){
+
+	}
+
+	function setSourceTile(target){
 		sourceIsTarget = sourceTile && sourceTile.data('x') === target.data('x') && sourceTile.data('y') === target.data('y');
 		clearSourceTile();
 		if(sourceIsTarget || target.hasClass('disabled'))return;
 
 		sourceTile = target;
 		sourceTile.addClass('blue')
-		highlightSurroundings()
-	});
+	}
 
 	function clearSourceTile(){
 		if(!sourceTile) return;
 		sourceTile.removeClass('blue')
 		sourceTile = null;
-	}
-
-	function highlightSurroundings(){
-		if(sourceTile === null){
-			return;
-		}
-		var surroundings = getSurroundings();
-
-		for(var k in surroundings){
-			var tile = $(surroundings[k]);
-			if(tile.hasClass('purple')) continue;
-			// tile.addClass('red');
-		}
 	}
 
 	function getSurroundings(){
@@ -63,5 +82,11 @@ $(document).ready(function(){
 		}
 
 		return surroundings;
+	}
+
+	function highlightCuurrentPlayer(){
+		$('.players span').css('background', 'white')
+		var currentColour = playerList[currentTurn].colour;
+		$('.players .'+currentColour).css('background', currentColour);
 	}
 });
