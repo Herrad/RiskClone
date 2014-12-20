@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+    	<script type='text/javascript' src='/javascripts/jquery-2.1.1.min.js'></script>
+		<script src="/javascripts/game.js"></script>
+	</head>
+	<body>
+		<table data->
+		<%for(var y = 1; y <= maxY; y++){%>
+			<tr>
+				<%for(var x = 1; x <= maxX; x++ ){%>
+					<%if((x === 6  && y != 5 && y != 7) || (y === 6  && x != 5 && x != 7)){%>
+						<td class="disabled" data-x="<%=x%>" data-y="<%=y%>"></td>
+					<%} else {%>
+						<td class="<%=getColour(x, y)%>" data-x="<%=x%>" data-y="<%=y%>"><%=startStrength%></td>
+					<%}%>
+				<%}%>
+			</tr>
+		<%}%>
+		</table>
+		<div class="players">
+			<span class="purple">Player 1</span>
+			<span class="green">Player 2</span>
+			<span class="red">Player 3</span>
+			<span class="orange">Player 4</span>
+		</div>
+	</body>
+</html>
