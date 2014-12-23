@@ -4,11 +4,16 @@ body {
   font-size:18px;
 }
 
-table{border-collapse: collapse;}
+.game{float:left;width: 100%;}
+
+table{float:left;width: 50%;border-collapse: collapse;margin-right: 25px;}
 td{width: 75px; height: 75px;border: 1px solid black;text-align: center;font-size:18px;background: white;}
 
-.players {float:left;margin: 0 auto 20px auto ;width:830px;}
-.players span {float:left;width:21%;margin-left:20px;text-align: center;}
+.console{float:left;width: 45%;height:90%;padding-left:25px; border-left: 1px solid black;}
+	.console ul{list-style-type: none;}
+
+.players {float:left;margin: 0 auto 20px auto ;width:100%;}
+.players span {float:left;width:21%;margin-left:20px;padding:10px 0;text-align: center;}
 .players span.purple{border:1px solid purple;}
 .players span.green{border:1px solid green;}
 .players span.red{border:1px solid red;}
@@ -22,3 +27,8 @@ td.orange{background: orange;}
 td.blue{background: blue;}
 
 .endTurn {margin:20px auto;padding:10px 0;width:800px;font-size: 18px;}
+
+
+.canvas {width:100%;height:1000px;}
+	.canvas .tile {position:absolute;background: url('../images/hexagon.png');width:128px;height:78px;text-align: center;padding-top:50px;-webkit-user-select: none;cursor: default;}
+		.canvas .tile.selected {background: url('../images/selected-hexagon.png');}

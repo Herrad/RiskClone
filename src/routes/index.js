@@ -1,4 +1,5 @@
 var express = require('express');
+var moment = require('moment');
 var router = express.Router();
 
 /* GET home page. */
@@ -13,6 +14,7 @@ router.get('/', function(req, res) {
 	   	maxX:11,
 	    maxY:11,
 	    startStrength:5,
+	    startTime:moment().format('D/MM/YYYY, h:mm:ss'),
 	    getColour: function(x, y){
 	    	if(x < 6 && y < 6 || y === 5 && x === 6){
 	    		return 'green';
