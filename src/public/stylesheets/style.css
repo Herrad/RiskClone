@@ -32,3 +32,4 @@ td.blue{background: blue;}
 .canvas {width:100%;height:1000px;}
 	.canvas .tile {position:absolute;background: url('../images/hexagon.png');width:128px;height:78px;text-align: center;padding-top:50px;-webkit-user-select: none;cursor: default;}
 		.canvas .tile.selected {background: url('../images/selected-hexagon.png');}
+		.canvas .tile.highlighted {background: url('../images/highlighted-hexagon.png');}
