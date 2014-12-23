@@ -24,21 +24,32 @@ $(document).ready(function(){
 		}
 	});
 
-	$(selectors.endTurn).click(function(){
+	function attack(target){
+		if(!getSurroundings().contains(target)) return;
 
-		currentTurn++;
-		if(currentTurn >= playerList.length){
-			currentTurn = 0;
+		var sourceText = sourceTile.text(),
+		sourceValue = rollDice(sourceText),
+		targetValue = rollDice(target.text());
+
+		if(sourceValue > targetValue){
+			target.text(sourceText-1);
+			sourceTile.text(1);
+			target.removeClass();
+			target.addClass(sourceTile.attr('class'));
+			console.log('won ' + sourceValue + 'v'+targetValue);
+		} else {
+			sourceTile.text(1);
+			console.log('lost ' + sourceValue + 'v'+targetValue);
 		}
 		clearSourceTile();
+	}
 
-		highlightCurrentPlayer();
-	});
-
-	function attack(target){
-		if(getSurroundings().contains(target)){
-			alert('attack!');
+	function rollDice(numberOfDice){
+		var runningTotal = 0;
+		for(var x = 0; x < numberOfDice; x++){
+			runningTotal += 1 + Math.floor(Math.random() * 6);
 		}
+		return runningTotal;
 	}
 
 	function setSourceTile(target){
@@ -94,6 +105,44 @@ $(document).ready(function(){
 		}
 
 		return surroundings;
+	}
+
+
+	$(selectors.endTurn).click(function(){
+
+		addWinnings();
+
+		currentTurn++;
+		if(currentTurn >= playerList.length){
+			currentTurn = 0;
+		}
+		clearSourceTile();
+
+		highlightCurrentPlayer();
+	});
+
+	function addWinnings(){
+		var totalTroops = 0;
+		var currentPlayerTiles = $('td.'+playerList[currentTurn].colour)
+		currentPlayerTiles.each(function(index, tile){
+			totalTroops += parseInt($(tile).text());
+		});
+		for(var i = 0; i < totalTroops; i++){
+			var winningTileText = 10;
+			tried = 0;
+			while(tried < 20){
+				var winningTileIndex = Math.floor(Math.random() * currentPlayerTiles.length);
+
+				var winningTile = $(currentPlayerTiles[winningTileIndex]);
+				winningTileText = parseInt(winningTile.text());
+				if(winningTileText < 10){
+					winningTile.text(winningTileText+1);
+					break;
+				}
+				tried++;
+			}
+
+		}
 	}
 
 	function highlightCurrentPlayer(){
