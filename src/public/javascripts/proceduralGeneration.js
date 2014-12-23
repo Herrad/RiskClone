@@ -1,12 +1,15 @@
 $(document).ready(function(){
+	function percentageGreaterThan(number){
+		return Math.random()*100 > number;
+	}
 
-	var Tile = function(position, top, left, canvas){
+	var Tile = function(position, top, left, canvas, initialNeighbour){
 		this.top = top;
 		this.left = left;
 		this.canvas = canvas;
 		this.position = position;
 
-		this.neighbours = [];
+		this.neighbours = initialNeighbour ? [initialNeighbour] : [];
 		this.maxNeighbours = 5;
 
 		var self = this;
@@ -49,7 +52,10 @@ $(document).ready(function(){
 					if(position === neighbourComingFrom){
 						continue;
 					}
-					addNeighbourAt(position);
+					var getsNeighbour = percentageGreaterThan(50);
+					if(getsNeighbour){
+						addNeighbourAt(position);
+					}
 				}
 			},
 
@@ -67,7 +73,7 @@ $(document).ready(function(){
 
 	var canvas = $('.canvas');
 
-	var tile = new Tile(-1, 200, 200, canvas);
+	var tile = new Tile(-1, 200, 200, canvas, null);
 	tile.addNeighbours(-1);
 	tile.append();
 });
