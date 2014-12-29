@@ -3,7 +3,9 @@ $(document).ready(function(){
 		return Math.random()*100 > number;
 	}
 	var globalId = 0;
-	var recursionLimit = 3;
+	var recursionLimit = 20;
+	var tiles = [];
+	var selectedTile = null;
 
 	var Tile = function(top, left, canvas, id, enabled){
 		this.top = top;
@@ -13,6 +15,15 @@ $(document).ready(function(){
 		this.maxNeighbours = 5;
 		this.id = id;
 		this.enabled = enabled;
+
+		this.neighbourPositions = {
+			0:{top:this.top-128, left:this.left},
+			1:{top:this.top-64, left:this.left+96},
+			2:{top:this.top+64, left:this.left+96},
+			3:{top:this.top+128, left:this.left},
+			4:{top:this.top+64, left:this.left-96},
+			5:{top:this.top-64, left:this.left-96}
+		};
 
 		var self = this;
 
@@ -25,63 +36,34 @@ $(document).ready(function(){
 			var neighbourTop = self.top;
 			var neighbourLeft = self.left;
 			if(position === 0){
-				neighbourTop-=127;
+				neighbourTop-=128;
 			}
 			if(position === 1){
 				neighbourTop-=64;
-				neighbourLeft+=95;
+				neighbourLeft+=96;
 			}
 			if(position === 2){
-				neighbourTop += 63;
-				neighbourLeft+=95;
+				neighbourTop += 64;
+				neighbourLeft+=96;
 			}
 			if(position === 3){
-				neighbourTop+=127;
+				neighbourTop+=128;
 			}
 			if(position === 4){
-				neighbourTop += 63;
-				neighbourLeft-=95;
+				neighbourTop += 64;
+				neighbourLeft-=96;
 			}
 			if(position === 5){
 				neighbourTop -= 64;
-				neighbourLeft-=95;
+				neighbourLeft-=96;
 			}
-			if(neighbourTop <= 64 || neighbourLeft <= 64 || neighbourLeft > 512 || neighbourTop > 512){
+			if(neighbourTop <= 64 || neighbourLeft <= 64 || neighbourLeft > 1536 || neighbourTop > 704){
 				enabled = false;
 			}
-
 			var neighbour = new Tile(neighbourTop, neighbourLeft, self.canvas, ++globalId, enabled);
 			self.neighbours['position' + position] = neighbour;
-
-			//add me to neighbour's neighbours
-			var neighbourPositionForMe = getNeighbourEquivalent(position)
-			neighbour.addNeighbourAt(neighbourPositionForMe, fromTile);
-
-
-			var leftNeighbourIndex = position - 1 >= 0 ? position - 1 : 5;
-			var leftNeighbour = self.neighbours['position' + leftNeighbourIndex]
-			if(leftNeighbour){
-				var oldNeighboursIndexForMe = getNeighbourEquivalent(leftNeighbourIndex);
-				var oldNeighboursNewNeighboursIndex = oldNeighboursIndexForMe-1 >= 0? oldNeighboursIndexForMe-1:5;
-				
-				leftNeighbour.addNeighbourAt(oldNeighboursNewNeighboursIndex, neighbour);
-
-				var newNeighboursIndexForMe = getNeighbourEquivalent(position);
-				var newNeighboursOldNeighboursIndex = newNeighboursIndexForMe +1 <6?newNeighboursIndexForMe+1:0;
-				neighbour.addNeighbourAt(newNeighboursOldNeighboursIndex, leftNeighbour);
-			}
-
-
-			var rightNeighbourIndex = position + 1 < 6 ? position + 1 : 0;
-			var rightNeighbour = self.neighbours['position' + rightNeighbourIndex]
-			if(rightNeighbour){
-				var oldNeighboursIndexForMe = getNeighbourEquivalent(rightNeighbourIndex);
-				var oldNeighboursNewNeighboursIndex = oldNeighboursIndexForMe+1 < 6? oldNeighboursIndexForMe+1:0;
-				rightNeighbour.addNeighbourAt(oldNeighboursNewNeighboursIndex, neighbour);
-
-				var newNeighboursIndexForMe = getNeighbourEquivalent(position);
-				var newNeighboursOldNeighboursIndex = newNeighboursIndexForMe -1 >=0?newNeighboursIndexForMe-1:5;
-				neighbour.addNeighbourAt(newNeighboursOldNeighboursIndex, rightNeighbour);
+			for(var i = 0; i < tiles.length; i++){
+				tiles[i].addNeighbourIfNear(neighbour);
 			}
 			neighbour.append();
 			
@@ -105,32 +87,40 @@ $(document).ready(function(){
 				}
 
 				for(var position = 0; position<=self.maxNeighbours; position++){
-					var enabled = percentageGreaterThan(20);
+					var enabled = percentageGreaterThan(30);
 					generateNeighbourAt(position, enabled, this);
 				}
-				if(recursed < recursionLimit){
-					var enabledNeighbours = this.getEnabledNeighbours();
-					for(var index in enabledNeighbours){
-						enabledNeighbours[index].generateNeighbours(recursed+1);
-					}
+				
+				var enabledNeighbours = this.getEnabledNeighbours();
+				for(var index in enabledNeighbours){
+					enabledNeighbours[index].generateNeighbours(recursed+1);
 				}
+			
 			},
 
 			append: function(){
 				var disabledClass = self.enabled ? '' : 'disabled';
-				var html = $('<div id="tile'+self.id+'" class="tile '+disabledClass+'" style="top:'+self.top+'px;left:'+self.left+'px" data-neighbours="'+getNeighboursAsString()+'">'+self.id+'</div>');
+				var html = $('<div id="tile'+self.id+'" class="tile '+disabledClass+'" style="top:'+self.top+'px;left:'+self.left+'px" data-neighbours="'+getNeighboursAsString()+'"></div>');
 				if(self.enabled){
 					html.click(function(el){
+						if(selectedTile && selectedTile != self){
+							return;
+						}
 						var target = $(el.target);
 						target.toggleClass('selected');
 						for(var k in self.neighbours){
-							if(target.hasClass('selected'))
+							if(target.hasClass('selected')){
+								selectedTile = self;
 								self.neighbours[k].highlight();
-							else
+							}
+							else{
+								selectedTile = null;
 								self.neighbours[k].dehighlight();
+							}
 						}
 					});
 				}
+				tiles.push(this);
 				self.canvas.append(html);
 			},
 
@@ -155,15 +145,29 @@ $(document).ready(function(){
 				}
 				return enabledNeighbours;
 			},
+			addNeighbourIfNear:function(tile){
+				var top = tile.top,
+					left = tile.left;
+				for(var k in self.neighbourPositions){
+					if(self.neighbourPositions[k].top === top && self.neighbourPositions[k].left === left){
+						var position = parseInt(k);
+						this.addNeighbourAt(position, tile);
+						var neighbourEquivalent = position + 3 < 6 ? position + 3 :  position - 3;
+						tile.addNeighbourAt(neighbourEquivalent, this);
+					}
+				}
+			},
 			enabled:self.enabled,
-			id:self.id
+			id:self.id,
+			top:self.top,
+			left:self.left
 		}
 
 	}
 
 	var canvas = $('.canvas');
 
-	var tile = new Tile(128, 128, canvas, 0, true);
-	tile.generateNeighbours(0);
+	var tile = new Tile(378, 378, canvas, 0, true);
 	tile.append();
+	tile.generateNeighbours(0);
 });
