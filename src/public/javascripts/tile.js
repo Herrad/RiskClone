@@ -30,35 +30,14 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
 				return;
 			}
 		}
-		var neighbourTop = self.top;
-		var neighbourLeft = self.left;
-		if(position === 0){
-			neighbourTop-=self.imageWidth;
-		}
-		if(position === 1){
-			neighbourTop-=self.halfImageWidth;
-			neighbourLeft+=self.threeQuartersImageWidth;
-		}
-		if(position === 2){
-			neighbourTop += self.halfImageWidth;
-			neighbourLeft+=self.threeQuartersImageWidth;
-		}
-		if(position === 3){
-			neighbourTop+=self.imageWidth;
-		}
-		if(position === 4){
-			neighbourTop += self.halfImageWidth;
-			neighbourLeft-=self.threeQuartersImageWidth;
-		}
-		if(position === 5){
-			neighbourTop -= self.halfImageWidth;
-			neighbourLeft-=self.threeQuartersImageWidth;
-		}
+		var neighbourTop = self.neighbourPositions[position].top;
+		var neighbourLeft = self.neighbourPositions[position].left;
+
 		if(neighbourTop <= self.imageWidth  || neighbourLeft <= 2*self.imageWidth || neighbourLeft > $(window).width()-192 || neighbourTop > 704){
 			enabled = false;
 		}
+
 		var neighbour = new Tile(neighbourTop, neighbourLeft, self.canvas, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
-		self.neighbours['position' + position] = neighbour;
 		for(var i = 0; i < self.gameBoard.tiles.length; i++){
 			self.gameBoard.tiles[i].addNeighbourIfNear(neighbour);
 		}
