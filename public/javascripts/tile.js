@@ -1,6 +1,6 @@
 
 
-var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
+var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colour){
 	this.top = top;
 	this.left = left;
 	this.canvas = canvas;
@@ -12,6 +12,7 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
 	this.halfImageWidth = imageWidth/2;
 	this.threeQuartersImageWidth = this.halfImageWidth + this.halfImageWidth/2;
 	this.gameBoard = gameBoard;
+	this.colour = colour;
 
 	this.neighbourPositions = {
 		0:{top:this.top-this.imageWidth, left:this.left},
@@ -48,14 +49,6 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
 	function getNeighbourEquivalent(position){
 		return position + 3 < 6 ? position + 3 :  position - 3;
 	}
-
-	function getNeighboursAsString(){
-		var neighbourSummary = '';
-		for(var k in self.neighbours){
-			neighbourSummary += k+':'+self.neighbours[k].id;
-		}
-		return neighbourSummary;
-	}
 	return {
 		enabled:self.enabled,
 		top:self.top,
@@ -83,8 +76,9 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
 		},
 
 		append: function(){
-			var disabledClass = self.enabled ? '' : 'disabled';
-			var html = $('<div id="tile'+self.id+'" class="tile '+disabledClass+'" style="top:'+self.top+'px;left:'+self.left+'px" data-neighbours="'+getNeighboursAsString()+'"></div>');
+			var disabledClass = self.enabled ? '' : ' disabled';
+			var colour = self.colour ? ' '+self.colour : '';
+			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px"></div>');
 			if(self.enabled){
 				html.click(function(el){self.gameBoard.clicked(el,self)});
 			}
@@ -124,6 +118,12 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard){
 					tile.addNeighbourAt(neighbourEquivalent, this);
 				}
 			}
+		},
+		conquered: function(newColour){
+			var oldColour = self.colour;
+			self.colour = newColour;
+			$('#tile' + self.id).removeClass(oldColour);
+			$('#tile' + self.id).addClass(self.colour);
 		}
 	}
 
