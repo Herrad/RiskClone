@@ -29,8 +29,8 @@ td.blue{background: blue;}
 .endTurn {margin:20px auto;padding:10px 0;width:800px;font-size: 18px;}
 
 
-.canvas {width:100%;height:1000px;}
-	.canvas .tile {position:absolute;background: url('../images/hexagon.png');width:128px;height:78px;text-align: center;padding-top:50px;-webkit-user-select: none;cursor: default;}
-		.canvas .tile.selected {background: url('../images/selected-hexagon.png');}
-		.canvas .tile.highlighted {background: url('../images/highlighted-hexagon.png');}
-		.canvas .tile.disabled {background: url('../images/disabled-hexagon.png');}
+.canvas {width:100%;height:850px;background-color: #5D98CC;}
+	.canvas .tile {position:absolute;background: url('../images/hexagon-small.png');width:64px;height:64px;text-align: center;-webkit-user-select: none;cursor: default;}
+		.canvas .tile.selected {background: url('../images/selected-hexagon-small.png');}
+		.canvas .tile.highlighted {background: url('../images/highlighted-hexagon-small.png');}
+		.canvas .tile.disabled {background: url('../images/disabled-hexagon-small.png');}
