@@ -2,40 +2,19 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
     	<script type='text/javascript' src='/javascripts/jquery-2.1.1.min.js'></script>
-		<script src="/javascripts/gameBoard.js"></script>
 		<script src="/javascripts/tile.js"></script>
 		<script src="/javascripts/proceduralGeneration.js"></script>
+		<script src="/javascripts/turns.js"></script>
 	</head>
 	<body>
 		<div class="canvas">
 		</div>
-		<div class="players">
-			<span class="purple" style="background:purple;">Player 1</span>
-			<span class="green" style="background:white;">Player 2</span>
-			<span class="red" style="background:white;">Player 3</span>
-			<span class="orange" style="background:white;">Player 4</span>
+		<div class="player-list">
+			<span class="purple selected">Player 1</span>
+			<span class="pink">Player 2</span>
+			<span class="orange">Player 3</span>
+			<span class="green">Player 4</span>
+			<button class="end-turn">End turn</button>
 		</div>
-		<div class="game">
-			<table >
-			<%for(var y = 1; y <= maxY; y++){%>
-				<tr>
-					<%for(var x = 1; x <= maxX; x++ ){%>
-						<%if((x === 6  && y != 5 && y != 7) || (y === 6  && x != 5 && x != 7)){%>
-							<td class="disabled" data-x="<%=x%>" data-y="<%=y%>"></td>
-						<%} else {%>
-							<td class="<%=getColour(x, y)%>" data-x="<%=x%>" data-y="<%=y%>"><%=startStrength%></td>
-						<%}%>
-					<%}%>
-				</tr>
-			<%}%>
-			</table>
-			<div class="console">
-				<span>Game Log:</span>
-				<ul>
-					<li>[<%=startTime%>] Game Started</li>
-				</ul>
-			</div>
-		</div>
-		<button class="endTurn">End Turn</button>
 	</body>
 </html>
