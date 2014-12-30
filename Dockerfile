@@ -9,7 +9,7 @@ COPY . /code
 RUN cd /code; npm install
 RUN cd /code; npm install -g grunt-cli; grunt
 
-ENV authRealm 178.62.64.215
+ENV authRealm 178.62.72.76
 
 EXPOSE  3000
 CMD ["node", "/code/src/bin/www"]
