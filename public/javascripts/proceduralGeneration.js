@@ -1,3 +1,4 @@
+var gameboard = null;
 $(document).ready(function(){
 	
 	var canvas = $('.canvas');
@@ -19,6 +20,10 @@ $(document).ready(function(){
 				green:0,
 				orange:0,
 				pink:0
+			},
+			clearSelection:function(){
+				$('.tile.selected').removeClass('selected');
+				$('.tile.highlighted').removeClass('highlighted');
 			},
 			getRandomColour:function(maxedColours){
 				var selection = null,
@@ -115,7 +120,7 @@ $(document).ready(function(){
 			}
 		};
 	}
-	var gameBoard = new GameBoard();
+	gameBoard = new GameBoard();
 
 	image.onload = function(){
 		gameBoard.generateTiles(this);

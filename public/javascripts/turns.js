@@ -12,6 +12,7 @@ $(document).ready(function(){
 		}
 		var nextPlayer = $($('.player-list span')[currentPlayerIndex]);
 		nextPlayer.toggleClass('selected');
+		gameBoard.clearSelection();
 	});
 
 });
