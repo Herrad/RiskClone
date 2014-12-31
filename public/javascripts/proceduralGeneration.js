@@ -12,6 +12,32 @@ $(document).ready(function(){
 		return {
 			tiles:self.tiles,
 			globalId:0,
+			maxColours:0,
+			currentColours:{
+				purple:0,
+				green:0,
+				orange:0,
+				pink:0
+			},
+			getRandomColour:function(maxedColours){
+				var selection = null,
+					iterations = 0;
+				// while(!selection || iterations > 10){
+				// 	iterations ++;
+					var selectedIndex = Math.round(Math.random() * 3)
+					selection = Object.keys(this.currentColours)[selectedIndex];
+					if(this.currentColours[selection] >= this.maxColours) {
+						maxedColours.push(selection);
+						if(maxedColours.length === 4){
+							return selection;
+						}
+						return this.getRandomColour(maxedColours);
+					} else {
+						this.currentColours[selection]++;
+						return selection;
+					}
+				// }
+			},
 			clicked: function(e, tile){
 				if(self.selectedTile && self.selectedTile != tile){
 					return;
@@ -35,27 +61,10 @@ $(document).ready(function(){
 				tile.generateNeighbours();
 
 				var enabledTiles = this.getEnabledTiles();
-				var purple = green = orange = pink = Math.floor(enabledTiles.length/4);
+				this.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(!enabledTiles[i].enabled) continue;
-					var colour = 'purple';
-					purple--;
-					if(purple <= 0){
-						colour = 'green';
-						green--;
-						purple = 0;
-					}
-					if(green <= 0){
-						colour = 'orange';
-						orange--;
-						green = 0;
-					}
-					if(orange <= 0){
-						colour = 'pink';
-						pink--;
-						orange = 0;
-					}
-					enabledTiles[i].conquered(colour);
+					enabledTiles[i].conquered(this.getRandomColour([]));
 				};
 			},
 			getEnabledTiles: function(){
