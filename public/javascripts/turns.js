@@ -1,24 +1,58 @@
+
+var currentPlayerIndex = 0;
+
 $(document).ready(function(){
-	
+
 	$('.end-turn').click(function(e){
 		var currentPlayer = $('span.selected');
 		currentPlayer.toggleClass('selected');
-		var nextPlayer = currentPlayer.next('span').length ? currentPlayer.next('span') : $('.player-list span').first();
+		currentPlayerIndex++;
+		if(currentPlayerIndex >= 4){
+			currentPlayerIndex = 0;
+		}
+		var nextPlayer = $($('.player-list span')[currentPlayerIndex]);
 		nextPlayer.toggleClass('selected');
 	});
 
-	var Player = function(number, colour){
-		this.number = number;
-		this.colour = colour;
-		self = this;
+});
+var AiPlayer = function(colour, gameBoard){
+	this.colour = colour;
+	this.gameBoard = gameBoard
+	self = this;
 
-		return{
-			isMe: function(identifier){
-				return identifier === 'Player ' + self.number;
-			},
-			canSelectTile: function(colour){
-				return colour === self.colour;
-			}
+	return{
+		takeTurn:function(){
+			$('.end-turn').click();
 		}
 	}
-});
+}
+
+var Player = function(colour, gameBoard){
+	this.colour = colour;
+	this.gameBoard = gameBoard
+	self = this;
+
+	return{
+		takeTurn:function(){}
+	}
+}
+
+var Turns = function(gameBoard){
+	this.gameBoard = gameBoard;
+	this.aiPlayers = [
+		new Player('purple', this.gameBoard),
+		new AiPlayer('pink', this.gameBoard),
+		new AiPlayer('orange', this.gameBoard),
+		new AiPlayer('green', this.gameBoard)
+	];
+	self = this;
+
+	return{
+		start:function(){
+			setInterval(function(){
+				var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+				currentAiPlayer.takeTurn();
+			}, 1000);
+		}
+	}
+}

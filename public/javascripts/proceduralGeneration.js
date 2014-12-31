@@ -9,6 +9,7 @@ $(document).ready(function(){
 		this.tiles = [],
 			self = this,
 			selectedTile = null;
+
 		return {
 			tiles:self.tiles,
 			globalId:0,
@@ -75,6 +76,42 @@ $(document).ready(function(){
 					}
 				}
 				return enabledTiles;
+			},
+			getAllTilesOfColour:function(colour){
+				var tileIdsMatchingColour = [],
+					enabledTiles = this.getEnabledTiles();
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(enabledTiles[i].colour === colour && tileIdsMatchingColour.indexOf(enabledTiles[i].id) === -1){
+						tileIdsMatchingColour.push(enabledTiles[i].id);
+					}
+				};
+				return tileIdsMatchingColour;
+			},
+			findTileBy: function(id){
+				for (var i = self.tiles.length - 1; i >= 0; i--) {
+					if(self.tiles[i].id === id) return self.tiles[i];
+				};
+			},
+			countAlliedNeighbours: function(counted, tile){
+				var alliedNeighbours = tile.getAlliedNeighbours();
+				for (var i = alliedNeighbours.length - 1; i >= 0; i--) {
+					if(counted.indexOf(alliedNeighbours[i].id) === -1){
+						counted.push(alliedNeighbours[i].id);
+						this.countAlliedNeighbours(counted, alliedNeighbours[i]);
+					}
+				};
+			},
+			getBlobCountsForColour:function(colour){
+				var colourTileIds = this.getAllTilesOfColour(colour)
+				var blobCounts = [];
+				for (var i = colourTileIds.length - 1; i >= 0; i--) {
+					var tileId = colourTileIds[i];
+					var counted = [tileId];
+					var tile = this.findTileBy(tileId);
+					this.countAlliedNeighbours(counted, tile)
+					blobCounts.push(counted.length);
+				};
+				return blobCounts.sort(function(a, b){return b-a});
 			}
 		};
 	}
@@ -82,5 +119,7 @@ $(document).ready(function(){
 
 	image.onload = function(){
 		gameBoard.generateTiles(this);
+		var turns = new Turns(gameBoard);
+		turns.start();
 	};
 });
