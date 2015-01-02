@@ -12,7 +12,6 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 	this.halfImageWidth = imageWidth/2;
 	this.threeQuartersImageWidth = this.halfImageWidth + this.halfImageWidth/2;
 	this.gameBoard = gameBoard;
-	this.colour = colour;
 
 	this.neighbourPositions = {
 		0:{top:this.top-this.imageWidth, left:this.left},
@@ -84,7 +83,8 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 			var strength = this.strength ? this.strength : '';
 			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px">'+strength+'</div>');
 			if(self.enabled){
-				html.click(function(el){self.gameBoard.clicked(el,self)});
+				var currentObj = this;
+				html.click(function(el){self.gameBoard.clicked(el,currentObj)});
 			}
 			self.gameBoard.tiles.push(this);
 			self.canvas.append(html);
@@ -115,10 +115,13 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 			}
 		},
 		conquered: function(newColour){
-			var oldColour = self.colour;
+			var oldColour = this.colour;
 			this.colour = newColour;
 			$('#tile' + self.id).removeClass(oldColour);
 			$('#tile' + self.id).addClass(this.colour);
+		},
+		getColour:function(){
+			return this.colour;
 		},
 		getAlliedNeighbours:function(){
 			var alliedNeighbours = [];

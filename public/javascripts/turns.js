@@ -16,6 +16,14 @@ $(document).ready(function(){
 	});
 
 });
+
+var TurtleStrategy = function(colour, gameBoard){
+	return{
+		enact:function(){
+			gameBoard.getHomeBlockFor(colour);
+		}
+	}
+}
 var AiPlayer = function(colour, gameBoard){
 	this.colour = colour;
 	this.gameBoard = gameBoard
@@ -46,13 +54,17 @@ var Turns = function(){
 		new AiPlayer('green')
 	];
 	var self = this;
+	this.hasActed = false;
 
 	return{
 		colours:['purple', 'pink', 'orange', 'green'],
 		start:function(){
 			setInterval(function(){
-				var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
-				currentAiPlayer.takeTurn();
+				if(!this.hasActed){
+					var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+					currentAiPlayer.takeTurn();
+					hasActed = true;
+				}
 			}, 1000);
 		}
 	}

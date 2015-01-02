@@ -61,29 +61,50 @@ $(document).ready(function(){
 		return {
 			tiles:self.tiles,
 			globalId:0,
+			rollDice:function(numberOfDiceToRoll){
+				var runningTotal = 0;
+				for (var i = numberOfDiceToRoll - 1; i >= 0; i--) {
+					runningTotal += Math.floor(1 + Math.random()*6);
+				};
+				return runningTotal;
+
+			},
 			clearSelection:function(){
 				$('.tile.selected').removeClass('selected');
 			},
 			clicked: function(e, tile){
 				if(self.selectedTile && self.selectedTile != tile){
+					this.launchAttack(tile);
 					return;
 				}
 				var target = $(e.target);
 				target.toggleClass('selected');
 				var targetTop = parseInt(target.css('top').replace('px', '')),
 					targetLeft = parseInt(target.css('left').replace('px', ''));
-				for(var k in tile.neighbours){
-					if(target.hasClass('selected')){
-						self.selectedTile = tile;
-						target.css('left', targetLeft-3+'px');
-						target.css('top', targetTop-3+'px');
-					}
-					else{
-						self.selectedTile = null;
-						target.css('left', targetLeft+3+'px');
-						target.css('top', targetTop+3+'px');
-					}
+
+				if(target.hasClass('selected')){
+					self.selectedTile = tile;
+					target.css('left', targetLeft-3+'px');
+					target.css('top', targetTop-3+'px');
 				}
+				else{
+					self.selectedTile = null;
+					target.css('left', targetLeft+3+'px');
+					target.css('top', targetTop+3+'px');
+				}
+			},
+			launchAttack:function(enemyTile){
+				if(enemyTile.getColour() === self.selectedTile.getColour()) return;
+				var attackRoll = this.rollDice(self.selectedTile.strength);
+				var defendRoll = this.rollDice(enemyTile.strength);
+				if(attackRoll > defendRoll){
+					enemyTile.conquered(self.selectedTile.getColour());
+					enemyTile.setStrength(self.selectedTile.strength - 1);
+					self.selectedTile.setStrength(1);
+				}else{
+					self.selectedTile.setStrength(1);
+				}
+
 			},
 			generateTiles: function(image){
 				var tile = new Tile(378, 378, canvas, 0, true, image.width, this);
