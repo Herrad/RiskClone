@@ -10,9 +10,16 @@ $(document).ready(function(){
 		this.tiles = [];
 		this.selectedTile = null;
 		this.turns = turns;
-		var self = this;
+		var maxColours = 0;
+		var currentColours = {
+				purple:0,
+				green:0,
+				orange:0,
+				pink:0
+			},
+			self = this;
 
-		function getEnabledTiles1(){
+		function getEnabledTiles(){
 			var enabledTiles = [];
 			for (var i = self.tiles.length - 1; i >= 0; i--) {
 				if(self.tiles[i].enabled){
@@ -20,6 +27,24 @@ $(document).ready(function(){
 				}
 			}
 			return enabledTiles;
+		};
+
+		function getRandomColour(maxedColours){
+			var	iterations = 0,
+				selectedIndex = Math.round(Math.random() * 3),
+				selection = Object.keys(currentColours)[selectedIndex];
+				
+			if(currentColours[selection] >= maxColours) {
+				maxedColours.push(selection);
+				if(maxedColours.length === 4){
+					currentColours[selection]++;
+					return selection;
+				}
+				return getRandomColour(maxedColours);
+			} else {
+				currentColours[selection]++;
+				return selection;
+			}
 		};
 
 		return {
@@ -37,21 +62,7 @@ $(document).ready(function(){
 				$('.tile.highlighted').removeClass('highlighted');
 			},
 			getRandomColour:function(maxedColours){
-				var selection = null,
-					iterations = 0,
-					selectedIndex = Math.round(Math.random() * 3);
-				selection = Object.keys(this.currentColours)[selectedIndex];
-				if(this.currentColours[selection] >= this.maxColours) {
-					maxedColours.push(selection);
-					if(maxedColours.length === 4){
-						this.currentColours[selection]++;
-						return selection;
-					}
-					return this.getRandomColour(maxedColours);
-				} else {
-					this.currentColours[selection]++;
-					return selection;
-				}
+				return getRandomColour(maxedColours);
 			},
 			clicked: function(e, tile){
 				if(self.selectedTile && self.selectedTile != tile){
@@ -79,7 +90,7 @@ $(document).ready(function(){
 				tile.append();
 				tile.generateNeighbours();
 
-				var enabledTiles = this.getEnabledTiles();
+				var enabledTiles = getEnabledTiles();
 				this.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(!enabledTiles[i].enabled) continue;
@@ -109,12 +120,9 @@ $(document).ready(function(){
 					}
 				}
 			},
-			getEnabledTiles: function(){
-				return getEnabledTiles1();
-			},
 			getAllTilesOfColour:function(colour){
 				var tileIdsMatchingColour = [],
-					enabledTiles = this.getEnabledTiles();
+					enabledTiles = getEnabledTiles();
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(enabledTiles[i].colour === colour && tileIdsMatchingColour.indexOf(enabledTiles[i].id) === -1){
 						tileIdsMatchingColour.push(enabledTiles[i].id);
