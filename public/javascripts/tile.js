@@ -133,15 +133,6 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		setStrength:function(strength){
 			this.strength = strength;
 			$('#tile' + this.id).text(strength);
-		},
-		countAlliedNeighbours: function(counted){
-			var alliedNeighbours = this.getAlliedNeighbours();
-			for (var i = alliedNeighbours.length - 1; i >= 0; i--) {
-				if(counted.indexOf(alliedNeighbours[i].id) === -1){
-					counted.push(alliedNeighbours[i].id);
-					alliedNeighbours[i].countAlliedNeighbours(counted);
-				}
-			};
 		}
 	}
 
