@@ -56,6 +56,7 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		neighbours:self.neighbours,
 		colour:self.colour,
 		id: self.id,
+		strength:0,
 
 		generateNeighbours: function(){
 			if(Object.keys(self.neighbours).length >= self.maxNeighbours){
@@ -80,7 +81,8 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		append: function(){
 			var disabledClass = self.enabled ? '' : ' disabled';
 			var colour = self.colour ? ' '+self.colour : '';
-			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px">'+this.id+'</div>');
+			var strength = this.strength ? this.strength : '';
+			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px">'+strength+'</div>');
 			if(self.enabled){
 				html.click(function(el){self.gameBoard.clicked(el,self)});
 			}
@@ -127,6 +129,10 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 				}
 			};
 			return alliedNeighbours;
+		},
+		setStrength:function(strength){
+			this.strength = strength;
+			$('#tile' + this.id).text(strength);
 		}
 	}
 

@@ -35,6 +35,7 @@ $(document).ready(function(){
 					if(this.currentColours[selection] >= this.maxColours) {
 						maxedColours.push(selection);
 						if(maxedColours.length === 4){
+							this.currentColours[selection]++;
 							return selection;
 						}
 						return this.getRandomColour(maxedColours);
@@ -74,8 +75,34 @@ $(document).ready(function(){
 				this.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(!enabledTiles[i].enabled) continue;
-					enabledTiles[i].conquered(this.getRandomColour([]));
+					var colour = this.getRandomColour([]);
+					enabledTiles[i].conquered(colour);
 				};
+				var maxStrength = 10;
+				var colourStrengths = {
+					'purple':this.currentColours['purple']*10,
+					'pink':this.currentColours['pink']*10,
+					'orange':this.currentColours['orange']*10,
+					'green':this.currentColours['green']*10
+				}
+				console.log(colourStrengths);
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(!enabledTiles[i].enabled) continue;
+					var colour = enabledTiles[i].colour;
+
+					var strength = Math.floor(1+Math.random()*10);
+					if(colourStrengths[colour] - strength < 0){
+						strength = colourStrengths[colour];
+						colourStrengths[colour] = 0;
+					} else {
+						colourStrengths[colour] = colourStrengths[colour]-strength;
+					}
+					enabledTiles[i].setStrength(strength);
+				};
+				console.log('purple ' + this.getAllTilesOfColour('purple').length);
+				console.log('pink ' + this.getAllTilesOfColour('pink').length);
+				console.log('orange ' + this.getAllTilesOfColour('orange').length);
+				console.log('green ' + this.getAllTilesOfColour('green').length);
 			},
 			getEnabledTiles: function(){
 				var enabledTiles = [];
