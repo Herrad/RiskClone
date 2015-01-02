@@ -38,12 +38,13 @@ var Player = function(colour, gameBoard){
 	}
 }
 
-var Turns = function(){
+var Turns = function(gameBoard){
+	this.gameBoard = gameBoard;
 	this.aiPlayers = [
-		new Player('purple'),
-		new AiPlayer('pink'),
-		new AiPlayer('orange'),
-		new AiPlayer('green')
+		new Player('purple', this.gameBoard),
+		new AiPlayer('pink', this.gameBoard),
+		new AiPlayer('orange', this.gameBoard),
+		new AiPlayer('green', this.gameBoard)
 	];
 	var self = this;
 
