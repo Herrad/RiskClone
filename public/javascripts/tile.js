@@ -34,7 +34,7 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		var neighbourTop = self.neighbourPositions[position].top;
 		var neighbourLeft = self.neighbourPositions[position].left;
 
-		if(neighbourTop <= self.imageWidth  || neighbourLeft <= 2*self.imageWidth || neighbourLeft > $(window).width()-192 || neighbourTop > 704){
+		if(neighbourTop <= self.imageWidth  || neighbourLeft <= 2*self.imageWidth || neighbourLeft > $(window).width()-192 || neighbourTop > 654){
 			enabled = false;
 		}
 
