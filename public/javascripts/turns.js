@@ -49,6 +49,7 @@ var Turns = function(gameBoard){
 	var self = this;
 
 	return{
+		colours:['purple', 'pink', 'orange', 'green'],
 		start:function(){
 			setInterval(function(){
 				var currentAiPlayer = self.aiPlayers[currentPlayerIndex];

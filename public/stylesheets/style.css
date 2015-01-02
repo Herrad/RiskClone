@@ -4,14 +4,18 @@ body {
   font-size:18px;
 }
 
-.player-list{width:500px;margin:10px auto;}
-	.player-list span{float:left;width:101px;padding:20px 11px;text-align: center;border:1px solid black;}
-		.player-list span.purple{background: #9696FF;}
-		.player-list span.pink{background: #FF9BDD;}
-		.player-list span.orange{background: #FFD587;}
-		.player-list span.green{background: #B8FFB2;}
-		.player-list span.selected{text-decoration: underline;}
-	.player-list .end-turn {float:left;width:500px;padding:15px;}
+.player-list{width:800px;margin:10px auto;}
+	.player-list div{float:left;width:178px;padding:5px 10px 20px 10px;border:1px solid black;}
+		.player-list div span{float:left;}
+			.player-list div span.title{width:100%;text-align: center;padding-bottom: 5px;}
+			.player-list div span.home{width:70%;}
+			.player-list div span.size{width:30%;text-align: right;}
+		.player-list div.purple{background: #9696FF;}
+		.player-list div.pink{background: #FF9BDD;}
+		.player-list div.orange{background: #FFD587;}
+		.player-list div.green{background: #B8FFB2;}
+			.player-list div.selected span.title{text-decoration: underline;}
+	.player-list .end-turn {float:left;width:100%;padding:15px;}
 
 
 .canvas {width:100%;height:800px;background-color: #5D98CC;}

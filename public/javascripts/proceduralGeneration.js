@@ -153,6 +153,11 @@ $(document).ready(function(){
 	image.onload = function(){
 		gameBoard.generateTiles(this);
 		var turns = new Turns(gameBoard);
+		for (var i = turns.colours.length - 1; i >= 0; i--) {
+			var colour = turns.colours[i];
+			var biggestBlob = gameBoard.getBlobCountsForColour(colour)[0];
+			$('.player-list .'+colour + ' span.size').text(biggestBlob);
+		};
 		turns.start();
 	};
 });
