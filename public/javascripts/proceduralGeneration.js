@@ -78,31 +78,28 @@ $(document).ready(function(){
 					var colour = this.getRandomColour([]);
 					enabledTiles[i].conquered(colour);
 				};
-				var maxStrength = 10;
-				var colourStrengths = {
-					'purple':this.currentColours['purple']*10,
-					'pink':this.currentColours['pink']*10,
-					'orange':this.currentColours['orange']*10,
-					'green':this.currentColours['green']*10
-				}
-				console.log(colourStrengths);
-				for (var i = enabledTiles.length - 1; i >= 0; i--) {
-					if(!enabledTiles[i].enabled) continue;
-					var colour = enabledTiles[i].colour;
-
-					var strength = Math.floor(1+Math.random()*10);
-					if(colourStrengths[colour] - strength < 0){
-						strength = colourStrengths[colour];
-						colourStrengths[colour] = 0;
-					} else {
-						colourStrengths[colour] = colourStrengths[colour]-strength;
+				this.setTileStrengths('purple');
+				this.setTileStrengths('pink');
+				this.setTileStrengths('orange');
+				this.setTileStrengths('green');
+			},
+			setTileStrengths:function(colour){
+				var colouredTiles = this.getAllTilesOfColour(colour);
+				for (var i = colouredTiles.length*5 - 1; i >= 0; i--) {
+					var selectedTile = null;
+					var selectedStrength = 100000;
+					while(selectedStrength > colouredTiles.length/5){
+						selectedTile = this.findTileBy(colouredTiles[Math.floor(colouredTiles.length * Math.random())]);
+						selectedStrength = selectedTile.strength;
 					}
-					enabledTiles[i].setStrength(strength);
+					selectedTile.setStrength(selectedStrength + 1);
 				};
-				console.log('purple ' + this.getAllTilesOfColour('purple').length);
-				console.log('pink ' + this.getAllTilesOfColour('pink').length);
-				console.log('orange ' + this.getAllTilesOfColour('orange').length);
-				console.log('green ' + this.getAllTilesOfColour('green').length);
+				for (var i = colouredTiles.length - 1; i >= 0; i--) {
+					var tile = this.findTileBy(colouredTiles[i]);
+					if(!tile.strength){
+						tile.setStrength(1);
+					}
+				}
 			},
 			getEnabledTiles: function(){
 				var enabledTiles = [];
@@ -157,6 +154,5 @@ $(document).ready(function(){
 		gameBoard.generateTiles(this);
 		var turns = new Turns(gameBoard);
 		turns.start();
-		console.log(gameBoard.getBlobCountsForColour('purple'));
 	};
 });
