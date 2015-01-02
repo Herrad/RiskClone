@@ -6,10 +6,21 @@ $(document).ready(function(){
 	image.src = '/images/hexagon-small.png';
 	
 
-	var GameBoard = function(){
+	var GameBoard = function(turns){
 		this.tiles = [];
 		this.selectedTile = null;
+		this.turns = turns;
 		var self = this;
+
+		function getEnabledTiles1(){
+			var enabledTiles = [];
+			for (var i = self.tiles.length - 1; i >= 0; i--) {
+				if(self.tiles[i].enabled){
+					enabledTiles.push(self.tiles[i]);
+				}
+			}
+			return enabledTiles;
+		};
 
 		return {
 			tiles:self.tiles,
@@ -27,23 +38,20 @@ $(document).ready(function(){
 			},
 			getRandomColour:function(maxedColours){
 				var selection = null,
-					iterations = 0;
-				// while(!selection || iterations > 10){
-				// 	iterations ++;
-					var selectedIndex = Math.round(Math.random() * 3)
-					selection = Object.keys(this.currentColours)[selectedIndex];
-					if(this.currentColours[selection] >= this.maxColours) {
-						maxedColours.push(selection);
-						if(maxedColours.length === 4){
-							this.currentColours[selection]++;
-							return selection;
-						}
-						return this.getRandomColour(maxedColours);
-					} else {
+					iterations = 0,
+					selectedIndex = Math.round(Math.random() * 3);
+				selection = Object.keys(this.currentColours)[selectedIndex];
+				if(this.currentColours[selection] >= this.maxColours) {
+					maxedColours.push(selection);
+					if(maxedColours.length === 4){
 						this.currentColours[selection]++;
 						return selection;
 					}
-				// }
+					return this.getRandomColour(maxedColours);
+				} else {
+					this.currentColours[selection]++;
+					return selection;
+				}
 			},
 			clicked: function(e, tile){
 				if(self.selectedTile && self.selectedTile != tile){
@@ -102,13 +110,7 @@ $(document).ready(function(){
 				}
 			},
 			getEnabledTiles: function(){
-				var enabledTiles = [];
-				for (var i = self.tiles.length - 1; i >= 0; i--) {
-					if(self.tiles[i].enabled){
-						enabledTiles.push(self.tiles[i]);
-					}
-				}
-				return enabledTiles;
+				return getEnabledTiles1();
 			},
 			getAllTilesOfColour:function(colour){
 				var tileIdsMatchingColour = [],
@@ -148,16 +150,11 @@ $(document).ready(function(){
 			}
 		};
 	}
-	gameBoard = new GameBoard();
 
 	image.onload = function(){
+		var turns = new Turns();
+		var gameBoard = new GameBoard(turns);
 		gameBoard.generateTiles(this);
-		var turns = new Turns(gameBoard);
-		for (var i = turns.colours.length - 1; i >= 0; i--) {
-			var colour = turns.colours[i];
-			var biggestBlob = gameBoard.getBlobCountsForColour(colour)[0];
-			$('.player-list .'+colour + ' span.size').text(biggestBlob);
-		};
 		turns.start();
 	};
 });
