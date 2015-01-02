@@ -7,9 +7,9 @@ $(document).ready(function(){
 	
 
 	var GameBoard = function(){
-		this.tiles = [],
-			self = this,
-			selectedTile = null;
+		this.tiles = [];
+		this.selectedTile = null;
+		var self = this;
 
 		return {
 			tiles:self.tiles,
@@ -50,14 +50,18 @@ $(document).ready(function(){
 				}
 				var target = $(e.target);
 				target.toggleClass('selected');
+				var targetTop = parseInt(target.css('top').replace('px', '')),
+					targetLeft = parseInt(target.css('left').replace('px', ''));
 				for(var k in tile.neighbours){
 					if(target.hasClass('selected')){
 						self.selectedTile = tile;
-						tile.neighbours[k].highlight();
+						target.css('left', targetLeft-3+'px');
+						target.css('top', targetTop-3+'px');
 					}
 					else{
 						self.selectedTile = null;
-						tile.neighbours[k].dehighlight();
+						target.css('left', targetLeft+3+'px');
+						target.css('top', targetTop+3+'px');
 					}
 				}
 			},
@@ -126,5 +130,6 @@ $(document).ready(function(){
 		gameBoard.generateTiles(this);
 		var turns = new Turns(gameBoard);
 		turns.start();
+		console.log(gameBoard.getBlobCountsForColour('purple'));
 	};
 });

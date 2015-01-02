@@ -31,7 +31,7 @@ var AiPlayer = function(colour, gameBoard){
 var Player = function(colour, gameBoard){
 	this.colour = colour;
 	this.gameBoard = gameBoard
-	self = this;
+	var self = this;
 
 	return{
 		takeTurn:function(){}
@@ -46,7 +46,7 @@ var Turns = function(gameBoard){
 		new AiPlayer('orange', this.gameBoard),
 		new AiPlayer('green', this.gameBoard)
 	];
-	self = this;
+	var self = this;
 
 	return{
 		start:function(){

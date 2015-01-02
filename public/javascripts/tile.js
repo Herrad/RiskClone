@@ -91,15 +91,6 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		addNeighbourAt: function(newNeighbourIndex, newNeighbour){
 			self.neighbours['position' + newNeighbourIndex] = newNeighbour;
 		},
-
-		highlight: function(){
-			var me = $('#tile'+self.id);
-			me.addClass('highlighted');
-		},
-		dehighlight: function(){
-			var me = $('#tile'+self.id);
-			me.removeClass('highlighted');
-		},
 		getEnabledNeighbours:function(){
 			var enabledNeighbours = [];
 			for(var k in self.neighbours){

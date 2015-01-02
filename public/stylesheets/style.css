@@ -20,6 +20,6 @@ body {
 		.canvas .tile.pink {background: url('../images/pink-hexagon.png');}
 		.canvas .tile.orange {background: url('../images/orange-hexagon.png');}
 		.canvas .tile.green {background: url('../images/green-hexagon.png');}
-		.canvas .tile.selected {background: url('../images/selected-hexagon-small.png');}
+		.canvas .tile.selected {border:3px solid red;z-index: 100;}
 		.canvas .tile.highlighted {background: url('../images/highlighted-hexagon-small.png');}
 		.canvas .tile.disabled {background: url('../images/disabled-hexagon-small.png');}
