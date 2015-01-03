@@ -69,7 +69,14 @@ $(document).ready(function(){
 
 			},
 			clearSelection:function(){
-				$('.tile.selected').removeClass('selected');
+				var target = $('div.tile.selected');
+				target.removeClass('selected');
+				self.selectedTile = null;
+				if(!target.length) return;
+				var targetTop = parseInt(target.css('top').replace('px', '')),
+					targetLeft = parseInt(target.css('left').replace('px', ''));
+				target.css('left', targetLeft+3+'px');
+				target.css('top', targetTop+3+'px');
 			},
 			clicked: function(e, tile){
 				if(self.selectedTile && self.selectedTile != tile){
@@ -176,6 +183,13 @@ $(document).ready(function(){
 					homeBlock.push(this.findTileBy(homeBlockIds[i]));
 				};
 				return homeBlock;
+			},
+			setBiggestBlobNumbers:function(colours){
+				for (var i = colours.length - 1; i >= 0; i--) {
+					var colour = colours[i];
+					var biggestBlob = this.getBlobCountsForColour(colour)[0];
+					$('.player-list .'+colour + ' span.size').text(biggestBlob);
+				};
 			}
 		};
 	}
@@ -184,11 +198,7 @@ $(document).ready(function(){
 		var gameBoard = new GameBoard();
 		var turns = new Turns(gameBoard);
 		gameBoard.generateTiles(this);
-		for (var i = turns.colours.length - 1; i >= 0; i--) {
-			var colour = turns.colours[i];
-			var biggestBlob = gameBoard.getBlobCountsForColour(colour)[0];
-			$('.player-list .'+colour + ' span.size').text(biggestBlob);
-		};
+		gameBoard.setBiggestBlobNumbers(turns.colours);
 		turns.start();
 	};
 });

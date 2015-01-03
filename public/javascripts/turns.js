@@ -4,21 +4,8 @@ var canMoveOn = false;
 
 $(document).ready(function(){
 
-	$('.end-turn').click(function(){
-		canMoveOn = true;
-	});
-
 });
-function moveTurnAlong(gameBoard){
-		var currentPlayer = $('.player-list div.selected');
-		currentPlayer.toggleClass('selected');
-		currentPlayerIndex++;
-		if(currentPlayerIndex >= 4){
-			currentPlayerIndex = 0;
-		}
-		var nextPlayer = $($('.player-list div')[currentPlayerIndex]);
-		nextPlayer.toggleClass('selected');
-	}
+
 var TurtleStrategy = function(colour, gameBoard){
 	this.gameBoard = gameBoard;
 	var self = this;
@@ -54,16 +41,16 @@ var AiPlayer = function(colour, gameBoard){
 	this.colour = colour;
 	this.gameBoard = gameBoard
 	this.strategy = new TurtleStrategy(colour,gameBoard);
+	this.hasActed = false;
 	self = this;
 
 	return{
-		hasActed: false,
 		takeTurn:function(){
-			if(this.hasActed) return;
+			if(self.hasActed) return;
 
-			this.hasActed=true;
+			self.hasActed=true;
 			self.strategy.enact(function(){
-				this.hasActed = false;
+				self.hasActed = false;
 				$('.end-turn').click();
 			});
 		}
@@ -77,10 +64,6 @@ var Player = function(colour, gameBoard){
 
 	return{
 		takeTurn:function(){
-			if(canMoveOn){
-				moveTurnAlong(gameBoard);
-				canMoveOn = false;
-			}
 		}
 	}
 }
@@ -92,10 +75,28 @@ var Turns = function(gameBoard){
 			new AiPlayer('orange', gameBoard),
 			new AiPlayer('green', gameBoard)
 		];
+	this.colours = ['purple', 'pink', 'orange', 'green'];
 	var self= this;
 
+	function moveTurnAlong(){
+		var currentPlayer = $('.player-list div.selected');
+		currentPlayer.toggleClass('selected');
+		currentPlayerIndex++;
+		if(currentPlayerIndex >= 4){
+			currentPlayerIndex = 0;
+		}
+		var nextPlayer = $($('.player-list div')[currentPlayerIndex]);
+		nextPlayer.toggleClass('selected');
+		gameBoard.clearSelection();
+		gameBoard.setBiggestBlobNumbers(self.colours);
+	}
+
+	$('.end-turn').click(function(){
+		moveTurnAlong(self.gameBoard);
+	});
+
 	return{
-		colours:['purple', 'pink', 'orange', 'green'],
+		colours:self.colours,
 		start:function(){
 			setInterval(function(){
 			var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
