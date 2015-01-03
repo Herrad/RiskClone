@@ -9,39 +9,44 @@ $(document).ready(function(){
 var TurtleStrategy = function(colour, gameBoard){
 	this.gameBoard = gameBoard;
 	var self = this;
+	function upgrade(callback){
+		callback();
+	}
 
 	function launchAttack(callback){
-			var homeBlock = self.gameBoard.getHomeBlockFor(colour);
-			var enemyNeighbours = [];
-			var homeTile = {strength: 1},
-				iterations = 0;
-			while(!enemyNeighbours.length || homeTile.strength === 1){
-				if(iterations > 50){
-					throw new Error('enemy could not find tile to attack in: ' + homeBlock );
-				}
-				var homeIndex = Math.floor(Math.random() * homeBlock.length);
-				homeTile = homeBlock[homeIndex];
-				enemyNeighbours = homeTile.getEnemyNeighbours();
-				iterations++;
+		var homeBlock = self.gameBoard.getHomeBlockFor(colour);
+		var enemyNeighbours = [];
+		var homeTile = {strength: 1},
+			iterations = 0;
+		while(!enemyNeighbours.length || homeTile.strength === 1){
+			if(iterations > 50){
+				upgrade(callback);
 			}
-			var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
-				enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
-				sourceTileId = homeTile.id,
-				sourceTile = $('#tile' + sourceTileId),
-				targetTileId = enemyNeighbour.id,
-				targetTile = $('#tile' + targetTileId);
+			var homeIndex = Math.floor(Math.random() * homeBlock.length);
+			homeTile = homeBlock[homeIndex];
+			enemyNeighbours = homeTile.getEnemyNeighbours();
+			iterations++;
+		}
+		var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
+			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
+			sourceTile = $('#tile' + homeTile.id),
+			targetTile = $('#tile' + enemyNeighbour.id);
 
-			setTimeout(function choose(){
-				sourceTile.click();
-				setTimeout(function attack(){
-					targetTile.click();
-					if(self.gameBoard.lastAttackVictory){
-						launchAttack(callback);
-					} else {
-						callback();
-					}
-				}, 1000)
-			}, 1000);
+		makeAttack(sourceTile, targetTile, callback);
+	}
+
+	function makeAttack(sourceTile, targetTile, callback){
+		setTimeout(function choose(){
+			sourceTile.click();
+			setTimeout(function attack(){
+				targetTile.click();
+				if(self.gameBoard.lastAttackVictory){
+					launchAttack(callback);
+				} else {
+					callback();
+				}
+			}, 1000)
+		}, 1000);
 	}
 
 	return{
