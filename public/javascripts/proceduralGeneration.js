@@ -130,6 +130,7 @@ $(document).ready(function(){
 				source.setStrength(source.strength - 1);
 				target.setStrength(target.strength + 1);
 				participated(self.selectedTile);
+				participated(target);
 
 			},
 			launchAttack:function(enemyTile){
