@@ -175,6 +175,13 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 			setTimeout(function(){
 				$('#tile' + me.id).removeClass('lost');
 			}, 1000);
+		},
+		hasNeighbour:function(tile){
+			var enabledNeighbours = getEnabledNeighbours();
+			for (var i = enabledNeighbours.length - 1; i >= 0; i--) {
+				if(tile === enabledNeighbours[i]) return true;
+			};
+			return false;
 		}
 	}
 
