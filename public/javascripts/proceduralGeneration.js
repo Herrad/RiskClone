@@ -33,7 +33,7 @@ $(document).ready(function(){
 				selectedIndex = Math.round(Math.random() * 3),
 				selection = Object.keys(currentColours)[selectedIndex];
 
-			if(currentColours[selection] >= maxColours) {
+			if(currentColours[selection] >= self.maxColours) {
 				maxedColours.push(selection);
 				if(maxedColours.length === 4){
 					currentColours[selection]++;
@@ -134,7 +134,7 @@ $(document).ready(function(){
 				// }
 
 				var enabledTiles = getEnabledTiles();
-				this.maxColours = Math.floor(enabledTiles.length/4);
+				self.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(!enabledTiles[i].enabled) continue;
 					var colour = getRandomColour([]);
@@ -149,9 +149,9 @@ $(document).ready(function(){
 				var colouredTiles = getAllTilesOfColour(colour);
 				for (var i = colouredTiles.length*5 - 1; i >= 0; i--) {
 					var selectedTile = null;
-					var selectedStrength = 100000;
+					var selectedStrength = 10;
 					var iterations = 0;
-					while(selectedStrength > colouredTiles.length/5 - 1){
+					while(selectedStrength >= 10){
 						if(iterations > 40){
 							throw new Error('attempted to set strength too many times');
 						}
