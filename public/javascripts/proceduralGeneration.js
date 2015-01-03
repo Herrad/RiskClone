@@ -113,8 +113,10 @@ $(document).ready(function(){
 					enemyTile.conquered(self.selectedTile.getColour());
 					enemyTile.setStrength(self.selectedTile.strength - 1);
 					self.selectedTile.setStrength(1);
+					self.selectedTile.won();
 				}else{
 					self.selectedTile.setStrength(1);
+					self.selectedTile.lost();
 				}
 				this.clearSelection();
 				this.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
@@ -221,7 +223,7 @@ $(document).ready(function(){
 						tile = this.getRandomTile(allTilesForColour)
 						iterations++;
 					}
-					tile.setStrength(tile.strength + 1);
+					tile.upgrade(tile.strength + 1, tile.id);
 				};
 			}
 		};

@@ -153,6 +153,28 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 					alliedNeighbours[i].countAlliedNeighbours(counted);
 				}
 			};
+		},
+		upgrade:function(newStrength, id){
+			var me = this;
+			$('#tile' + me.id).addClass('upgrading');
+			me.setStrength(newStrength);
+			setTimeout(function(){
+				$('#tile' + me.id).removeClass('upgrading');
+			}, 1000);
+		},
+		won:function(){
+			var me = this;
+			$('#tile' + me.id).addClass('won');
+			setTimeout(function(){
+				$('#tile' + me.id).removeClass('won');
+			}, 1000);
+		},
+		lost:function(){
+			var me = this;
+			$('#tile' + me.id).addClass('lost');
+			setTimeout(function(){
+				$('#tile' + me.id).removeClass('lost');
+			}, 1000);
 		}
 	}
 
