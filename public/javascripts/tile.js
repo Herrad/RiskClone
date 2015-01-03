@@ -177,7 +177,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 			}, 1000);
 		},
 		hasNeighbour:function(tile){
-			var enabledNeighbours = getEnabledNeighbours();
+			var enabledNeighbours = this.getEnabledNeighbours();
 			for (var i = enabledNeighbours.length - 1; i >= 0; i--) {
 				if(tile === enabledNeighbours[i]) return true;
 			};

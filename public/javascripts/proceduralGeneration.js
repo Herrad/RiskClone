@@ -84,8 +84,10 @@ $(document).ready(function(){
 					if(!self.selectedTile && tile.colour != 'purple') return;
 				} 
 					
-				if(self.selectedTile && self.selectedTile != tile && self.selectedTile.hasNeighbour(tile)){
-					this.launchAttack(tile);
+				if(self.selectedTile && self.selectedTile != tile){
+					if(self.selectedTile.hasNeighbour(tile)){
+						this.launchAttack(tile);
+					}
 					return;
 				}
 				if(tile.strength === 1) return;
