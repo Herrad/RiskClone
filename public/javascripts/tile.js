@@ -48,6 +48,15 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 	function getNeighbourEquivalent(position){
 		return position + 3 < 6 ? position + 3 :  position - 3;
 	}
+
+	function rollDice(numberOfDiceToRoll){
+		var runningTotal = 0;
+		for (var i = numberOfDiceToRoll - 1; i >= 0; i--) {
+			runningTotal += Math.floor(1 + Math.random()*6);
+		};
+		return runningTotal;
+	}
+
 	return {
 		enabled:self.enabled,
 		top:self.top,
@@ -63,7 +72,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			}
 
 			for(var position = 0; position<=self.maxNeighbours; position++){
-				var enabled = this.percentageGreaterThan(80);
+				var enabled = this.percentageGreaterThan(30);
 				generateNeighbourAt(position, enabled, this);
 			}
 			
@@ -155,6 +164,24 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 					alliedNeighbours[i].countAlliedNeighbours(counted);
 				}
 			};
+		},
+		attack:function(enemyTile){
+			var attackRoll = rollDice(this.strength),
+				defendRoll = rollDice(enemyTile.strength);
+			if(attackRoll > defendRoll){
+				enemyTile.conquered(this.getColour());
+				enemyTile.setStrength(this.strength - 1);
+				this.setStrength(1);
+				this.won();
+				gameBoard.lastAttackVictory = true;
+			}else{
+				this.setStrength(1);
+				this.lost();
+				gameBoard.lastAttackVictory = false;
+			}
+			gameBoard.participated(this);
+			gameBoard.clearSelection();
+			gameBoard.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
 		},
 		upgrade:function(newStrength, id){
 			var me = this;

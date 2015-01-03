@@ -105,23 +105,24 @@ $(document).ready(function(){
 				target.css('top', targetTop+3+'px');
 			},
 			clicked: function(e, tile){
+				var selectedTile = self.selectedTile;
 				if(e.originalEvent){
 					if(!self.enabled) return;
-					if(!self.selectedTile && tile.colour != 'purple') return;
+					if(!selectedTile && tile.colour != 'purple') return;
 				} 
 					
-				if(self.selectedTile && self.selectedTile != tile){
-					if(self.selectedTile.hasNeighbour(tile)){
-						if(tile.getColour() === self.selectedTile.getColour()) {
-							this.moveStrength(self.selectedTile, tile);
+				if(selectedTile && selectedTile != tile){
+					if(selectedTile.hasNeighbour(tile)){
+						if(tile.getColour() === selectedTile.getColour()) {
+							this.moveStrength(selectedTile, tile);
 						}
 						else{
-							this.launchAttack(tile);
+							selectedTile.attack(tile);
 						}
 					}
 					return;
 				}
-				if(!self.selectedTile && tile.strength === 1) return;
+				if(!selectedTile && tile.strength === 1) return;
 
 				toggleSelection(e, tile);
 			},
@@ -280,7 +281,8 @@ $(document).ready(function(){
 				};
 				self.enabled = false;
 				return true;
-			}
+			},
+			participated:participated
 		};
 	}
 
