@@ -60,6 +60,7 @@ $(document).ready(function(){
 		return {
 			tiles:self.tiles,
 			globalId:0,
+			lastAttackVictory:false,
 			rollDice:function(numberOfDiceToRoll){
 				var runningTotal = 0;
 				for (var i = numberOfDiceToRoll - 1; i >= 0; i--) {
@@ -116,9 +117,11 @@ $(document).ready(function(){
 					enemyTile.setStrength(self.selectedTile.strength - 1);
 					self.selectedTile.setStrength(1);
 					self.selectedTile.won();
+					this.lastAttackVictory = true;
 				}else{
 					self.selectedTile.setStrength(1);
 					self.selectedTile.lost();
+					this.lastAttackVictory = false;
 				}
 				this.clearSelection();
 				this.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);

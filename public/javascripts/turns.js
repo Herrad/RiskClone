@@ -9,8 +9,8 @@ $(document).ready(function(){
 var TurtleStrategy = function(colour, gameBoard){
 	this.gameBoard = gameBoard;
 	var self = this;
-	return{
-		enact:function(callback){
+
+	function launchAttack(callback){
 			var homeBlock = self.gameBoard.getHomeBlockFor(colour);
 			var enemyNeighbours = [];
 			var homeTile = {strength: 1},
@@ -24,23 +24,29 @@ var TurtleStrategy = function(colour, gameBoard){
 				enemyNeighbours = homeTile.getEnemyNeighbours();
 				iterations++;
 			}
-				var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
-					enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
-					sourceTileId = homeTile.id,
-					sourceTile = $('#tile' + sourceTileId),
-					targetTileId = enemyNeighbour.id,
-					targetTile = $('#tile' + targetTileId);
+			var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
+				enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
+				sourceTileId = homeTile.id,
+				sourceTile = $('#tile' + sourceTileId),
+				targetTileId = enemyNeighbour.id,
+				targetTile = $('#tile' + targetTileId);
 
-				setTimeout(function choose(){
-					sourceTile.click();
-					setTimeout(function attack(){
-						targetTile.click();
+			setTimeout(function choose(){
+				sourceTile.click();
+				setTimeout(function attack(){
+					targetTile.click();
+					if(self.gameBoard.lastAttackVictory){
+						launchAttack(callback);
+					} else {
 						callback();
-					}, 1000)
+					}
 				}, 1000)
-			for (var i = homeBlock.length - 1; i >= 0; i--) {
+			}, 1000);
+	}
 
-			};
+	return{
+		enact:function(callback){
+			launchAttack(callback);
 		}
 	}
 }
