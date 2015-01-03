@@ -58,28 +58,9 @@ $(document).ready(function(){
 			return tileIdsMatchingColour;
 		}
 
-		function toggleSelection(e, tile){
-			if(!self.selectedTile && self.participatedTiles.indexOf(tile) != -1) return;
-			var target = $(e.target);
-			target.toggleClass('selected');
-			var targetTop = parseInt(target.css('top').replace('px', '')),
-				targetLeft = parseInt(target.css('left').replace('px', ''));
-
-			if(target.hasClass('selected')){
-				self.selectedTile = tile;
-				target.css('left', targetLeft-3+'px');
-				target.css('top', targetTop-3+'px');
-			}
-			else{
-				self.selectedTile = null;
-				target.css('left', targetLeft+3+'px');
-				target.css('top', targetTop+3+'px');
-			}
-		}
-
 		function participated(tile){
 			self.participatedTiles.push(tile);
-			tile.hasActed(true);
+			tile.setHasActed(true);
 		}
 
 		return {
@@ -114,7 +95,7 @@ $(document).ready(function(){
 				if(selectedTile && selectedTile != tile){
 					if(selectedTile.hasNeighbour(tile)){
 						if(tile.getColour() === selectedTile.getColour()) {
-							this.moveStrength(selectedTile, tile);
+							selectedTile.moveStrength(tile);
 						}
 						else{
 							selectedTile.attack(tile);
@@ -124,34 +105,31 @@ $(document).ready(function(){
 				}
 				if(!selectedTile && tile.strength === 1) return;
 
-				toggleSelection(e, tile);
+				this.toggleSelection(e, tile);
 			},
-			moveStrength:function(source, target){
-				if(source.strength <= 1 || target.strength >= 10) return;
-				source.setStrength(source.strength - 1);
-				target.setStrength(target.strength + 1);
-				participated(self.selectedTile);
-				participated(target);
+			toggleSelection:function(e, tile){
+				if(!this.selectedTile() && !tile.canAct) return;
+				var target = $(e.target);
+				target.toggleClass('selected');
+				var targetTop = parseInt(target.css('top').replace('px', '')),
+					targetLeft = parseInt(target.css('left').replace('px', ''));
 
-			},
-			launchAttack:function(enemyTile){
-				var attackRoll = this.rollDice(self.selectedTile.strength);
-				var defendRoll = this.rollDice(enemyTile.strength);
-				if(attackRoll > defendRoll){
-					enemyTile.conquered(self.selectedTile.getColour());
-					enemyTile.setStrength(self.selectedTile.strength - 1);
-					self.selectedTile.setStrength(1);
-					self.selectedTile.won();
-					this.lastAttackVictory = true;
-				}else{
-					self.selectedTile.setStrength(1);
-					self.selectedTile.lost();
-					this.lastAttackVictory = false;
+				if(target.hasClass('selected')){
+					this.setSelectedTile(tile);
+					target.css('left', targetLeft-3+'px');
+					target.css('top', targetTop-3+'px');
 				}
-				participated(self.selectedTile);
-				this.clearSelection();
-				this.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
-
+				else{
+					this.setSelectedTile(null);
+					target.css('left', targetLeft+3+'px');
+					target.css('top', targetTop+3+'px');
+				}
+			},
+			selectedTile:function(){
+				return self.selectedTile;
+			},
+			setSelectedTile: function(tile){
+				self.selectedTile = tile;
 			},
 			generateTiles: function(image){
 				var halfCanvasWidth = Math.floor($('.canvas').width()/2),
@@ -267,7 +245,7 @@ $(document).ready(function(){
 			},
 			resetParticipation:function(){
 				for(var tile in self.participatedTiles){
-					self.participatedTiles[tile].hasActed(false);
+					self.participatedTiles[tile].setHasActed(false);
 				}
 				self.participatedTiles = [];
 			},

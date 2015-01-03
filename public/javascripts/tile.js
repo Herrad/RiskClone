@@ -98,6 +98,31 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			self.gameBoard.tiles.push(currentObj);
 			$('.canvas').append(html);
 		},
+		attack:function(enemyTile){
+			var attackRoll = rollDice(this.strength),
+				defendRoll = rollDice(enemyTile.strength);
+			if(attackRoll > defendRoll){
+				enemyTile.conquered(this.getColour());
+				enemyTile.setStrength(this.strength - 1);
+				this.setStrength(1);
+				this.won();
+				gameBoard.lastAttackVictory = true;
+			}else{
+				this.setStrength(1);
+				this.lost();
+				gameBoard.lastAttackVictory = false;
+			}
+			gameBoard.participated(this);
+			gameBoard.clearSelection();
+			gameBoard.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
+		},
+		moveStrength: function(target){
+			if(this.strength <= 1 || target.strength >= 10) return;
+			this.setStrength(this.strength - 1);
+			target.setStrength(target.strength + 1);
+			gameBoard.participated(this);
+			gameBoard.participated(target);
+		},
 		addNeighbourAt: function(newNeighbourIndex, newNeighbour){
 			self.neighbours['position' + newNeighbourIndex] = newNeighbour;
 		},
@@ -165,24 +190,6 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 				}
 			};
 		},
-		attack:function(enemyTile){
-			var attackRoll = rollDice(this.strength),
-				defendRoll = rollDice(enemyTile.strength);
-			if(attackRoll > defendRoll){
-				enemyTile.conquered(this.getColour());
-				enemyTile.setStrength(this.strength - 1);
-				this.setStrength(1);
-				this.won();
-				gameBoard.lastAttackVictory = true;
-			}else{
-				this.setStrength(1);
-				this.lost();
-				gameBoard.lastAttackVictory = false;
-			}
-			gameBoard.participated(this);
-			gameBoard.clearSelection();
-			gameBoard.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
-		},
 		upgrade:function(newStrength, id){
 			var me = this;
 			$('#tile' + me.id).addClass('upgrading');
@@ -212,8 +219,8 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			};
 			return false;
 		},
-		hasActed:function(hasActed){
-			self.canAct = !hasActed;
+		setHasActed:function(hasActed){
+			this.canAct = !hasActed;
 			if(hasActed){
 				$('#tile'+ self.id).addClass('acted');
 			} else {
