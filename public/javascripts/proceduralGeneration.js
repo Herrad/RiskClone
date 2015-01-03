@@ -57,6 +57,24 @@ $(document).ready(function(){
 			return tileIdsMatchingColour;
 		}
 
+		function toggleSelection(e, tile){
+			var target = $(e.target);
+			target.toggleClass('selected');
+			var targetTop = parseInt(target.css('top').replace('px', '')),
+				targetLeft = parseInt(target.css('left').replace('px', ''));
+
+			if(target.hasClass('selected')){
+				self.selectedTile = tile;
+				target.css('left', targetLeft-3+'px');
+				target.css('top', targetTop-3+'px');
+			}
+			else{
+				self.selectedTile = null;
+				target.css('left', targetLeft+3+'px');
+				target.css('top', targetTop+3+'px');
+			}
+		}
+
 		return {
 			tiles:self.tiles,
 			globalId:0,
@@ -87,29 +105,25 @@ $(document).ready(function(){
 					
 				if(self.selectedTile && self.selectedTile != tile){
 					if(self.selectedTile.hasNeighbour(tile)){
-						this.launchAttack(tile);
+						if(tile.getColour() === self.selectedTile.getColour()) {
+							this.moveStrength(self.selectedTile, tile);
+						}
+						else{
+							this.launchAttack(tile);
+						}
 					}
 					return;
 				}
-				if(tile.strength === 1) return;
-				var target = $(e.target);
-				target.toggleClass('selected');
-				var targetTop = parseInt(target.css('top').replace('px', '')),
-					targetLeft = parseInt(target.css('left').replace('px', ''));
+				if(!self.selectedTile && tile.strength === 1) return;
 
-				if(target.hasClass('selected')){
-					self.selectedTile = tile;
-					target.css('left', targetLeft-3+'px');
-					target.css('top', targetTop-3+'px');
-				}
-				else{
-					self.selectedTile = null;
-					target.css('left', targetLeft+3+'px');
-					target.css('top', targetTop+3+'px');
-				}
+				toggleSelection(e, tile);
+			},
+			moveStrength:function(source, target){
+				if(source.strength <= 1 || target.strength >= 10) return;
+				source.setStrength(source.strength - 1);
+				target.setStrength(target.strength + 1);
 			},
 			launchAttack:function(enemyTile){
-				if(enemyTile.getColour() === self.selectedTile.getColour()) return;
 				var attackRoll = this.rollDice(self.selectedTile.strength);
 				var defendRoll = this.rollDice(enemyTile.strength);
 				if(attackRoll > defendRoll){
