@@ -9,6 +9,7 @@ $(document).ready(function(){
 	var GameBoard = function(){
 		this.tiles = [];
 		this.selectedTile = null;
+		this.enabled = true;
 		var maxColours = 0;
 		var currentColours = {
 				purple:0,
@@ -79,6 +80,7 @@ $(document).ready(function(){
 				target.css('top', targetTop+3+'px');
 			},
 			clicked: function(e, tile){
+				if(e.originalEvent && !self.enabled) return;
 				if(self.selectedTile && self.selectedTile != tile){
 					this.launchAttack(tile);
 					return;
@@ -191,6 +193,9 @@ $(document).ready(function(){
 					var biggestBlob = this.getBlobCountsForColour(colour)[0];
 					$('.player-list .'+colour + ' span.size').text(biggestBlob);
 				};
+			},
+			setEnabled: function(enabled){
+				self.enabled = enabled;
 			}
 		};
 	}

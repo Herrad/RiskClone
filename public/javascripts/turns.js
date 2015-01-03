@@ -55,7 +55,8 @@ var AiPlayer = function(colour, gameBoard){
 				self.hasActed = false;
 				$('.end-turn').click();
 			});
-		}
+		},
+		isPlayer:false
 	}
 }
 
@@ -66,7 +67,8 @@ var Player = function(colour, gameBoard){
 
 	return{
 		takeTurn:function(){
-		}
+		},
+		isPlayer:true
 	}
 }
 
@@ -101,7 +103,8 @@ var Turns = function(gameBoard){
 		colours:self.colours,
 		start:function(){
 			setInterval(function(){
-			var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+				var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+				gameBoard.setEnabled(currentAiPlayer.isPlayer);
 				currentAiPlayer.takeTurn();
 			}, 1000);
 		}
