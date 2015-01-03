@@ -13,11 +13,16 @@ var TurtleStrategy = function(colour, gameBoard){
 		enact:function(callback){
 			var homeBlock = self.gameBoard.getHomeBlockFor(colour);
 			var enemyNeighbours = [];
-			var homeTile = {strength: 1};
+			var homeTile = {strength: 1},
+				iterations = 0;
 			while(!enemyNeighbours.length || homeTile.strength === 1){
+				if(iterations > 50){
+					throw new Error('enemy could not find tile to attack in: ' + homeBlock );
+				}
 				var homeIndex = Math.floor(Math.random() * homeBlock.length);
 				homeTile = homeBlock[homeIndex];
-				enemyNeighbours = homeTile.getEnemyNeighbours()
+				enemyNeighbours = homeTile.getEnemyNeighbours();
+				iterations++;
 			}
 				var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
 					enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
@@ -103,11 +108,11 @@ var Turns = function(gameBoard){
 	return{
 		colours:self.colours,
 		start:function(){
-			// setInterval(function(){
-			// 	self.currentAiPlayer = self.aiPlayers[currentPlayerIndex];
-			// 	gameBoard.setEnabled(self.currentAiPlayer.isPlayer);
-			// 	self.currentAiPlayer.takeTurn();
-			// }, 1000);
+			setInterval(function(){
+				self.currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+				gameBoard.setEnabled(self.currentAiPlayer.isPlayer);
+				self.currentAiPlayer.takeTurn();
+			}, 1000);
 		}
 	}
 }

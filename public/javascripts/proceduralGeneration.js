@@ -191,7 +191,7 @@ $(document).ready(function(){
 					tile.countAlliedNeighbours(counted)
 					blocks.push(counted);
 				};
-				return blocks.sort(function(a, b){return b-a})[0];
+				return blocks.sort(function(a, b){return b.length-a.length})[0];
 			},
 			getHomeBlockFor: function(colour){
 				var homeBlock = [],
