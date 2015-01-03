@@ -153,7 +153,9 @@ $(document).ready(function(){
 
 			},
 			generateTiles: function(image){
-				var tile = new Tile(378, 378, 0, true, image.width, this);
+				var halfCanvasWidth = Math.floor($('.canvas').width()/2),
+					halfCanvasHeight = Math.floor($('.canvas').height()/2),
+					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, image.width, this, {});
 				tile.append();
 				tile.generateNeighbours();
 
@@ -256,7 +258,10 @@ $(document).ready(function(){
 						tile = this.getRandomTile(allTilesForColour)
 						iterations++;
 					}
-					tile.upgrade(tile.strength + 1, tile.id);
+
+					if(iterations < allTilesForColour.length * 2) {
+						tile.upgrade(tile.strength + 1, tile.id);
+					}
 				};
 			},
 			resetParticipation:function(){

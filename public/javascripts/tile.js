@@ -1,6 +1,6 @@
 
 
-var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
+var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilities){
 	this.top = top;
 	this.left = left;
 	this.neighbours = {};
@@ -11,6 +11,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 	this.halfImageWidth = imageWidth/2;
 	this.threeQuartersImageWidth = this.halfImageWidth + this.halfImageWidth/2;
 	this.gameBoard = gameBoard;
+	this.specialAbilities = specialAbilities;
 
 	this.neighbourPositions = {
 		0:{top:this.top-this.imageWidth, left:this.left},
@@ -36,7 +37,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 			enabled = false;
 		}
 
-		var neighbour = new Tile(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
+		var neighbour = new Tile(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard, {});
 		for(var i = 0; i < self.gameBoard.tiles.length; i++){
 			self.gameBoard.tiles[i].addNeighbourIfNear(neighbour);
 		}
@@ -62,7 +63,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 			}
 
 			for(var position = 0; position<=self.maxNeighbours; position++){
-				var enabled = this.percentageGreaterThan(30);
+				var enabled = this.percentageGreaterThan(80);
 				generateNeighbourAt(position, enabled, this);
 			}
 			

@@ -34,8 +34,21 @@ var TurtleStrategy = function(colour, gameBoard){
 			iterations++;
 		}
 		var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
-			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
-			sourceTile = $('#tile' + homeTile.id),
+			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex];
+
+		iterations = 0;
+		while(enemyNeighbour.strength >= homeTile.strength * 3){
+			enemyNeighboursIndex ++;
+			if(enemyNeighboursIndex >= enemyNeighbours.length)
+				enemyNeighboursIndex = 0;
+			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex];
+			if(iterations >= 5){
+				return upgrade(callback);
+			}
+			iterations++;
+		}
+
+		var sourceTile = $('#tile' + homeTile.id),
 			targetTile = $('#tile' + enemyNeighbour.id);
 
 		makeAttack(sourceTile, targetTile, callback);
