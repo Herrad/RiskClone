@@ -80,9 +80,11 @@ var Turns = function(gameBoard){
 			new AiPlayer('green', gameBoard)
 		];
 	this.colours = ['purple', 'pink', 'orange', 'green'];
-	var self= this;
+	this.currentAiPlayer = this.aiPlayers[currentPlayerIndex]
+	var self = this;
 
 	function moveTurnAlong(){
+		// gameBoard.distributeStrength(self.colours[currentPlayerIndex]);
 		var currentPlayer = $('.player-list div.selected');
 		currentPlayer.toggleClass('selected');
 		currentPlayerIndex++;
@@ -101,11 +103,11 @@ var Turns = function(gameBoard){
 	return{
 		colours:self.colours,
 		start:function(){
-			setInterval(function(){
-				var currentAiPlayer = self.aiPlayers[currentPlayerIndex];
-				gameBoard.setEnabled(currentAiPlayer.isPlayer);
-				currentAiPlayer.takeTurn();
-			}, 1000);
+			// setInterval(function(){
+			// 	self.currentAiPlayer = self.aiPlayers[currentPlayerIndex];
+			// 	gameBoard.setEnabled(self.currentAiPlayer.isPlayer);
+			// 	self.currentAiPlayer.takeTurn();
+			// }, 1000);
 		}
 	}
 }

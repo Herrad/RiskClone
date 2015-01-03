@@ -144,7 +144,7 @@ $(document).ready(function(){
 					var selectedTile = null;
 					var selectedStrength = 100000;
 					while(selectedStrength > colouredTiles.length/5){
-						selectedTile = this.findTileBy(colouredTiles[Math.floor(colouredTiles.length * Math.random())]);
+						selectedTile = this.getRandomTile(colouredTiles);
 						selectedStrength = selectedTile.strength;
 					}
 					selectedTile.setStrength(selectedStrength + 1);
@@ -155,6 +155,9 @@ $(document).ready(function(){
 						tile.setStrength(1);
 					}
 				}
+			},
+			getRandomTile:function(tiles){
+				return this.findTileBy(tiles[Math.floor(tiles.length * Math.random())]);
 			},
 			findTileBy: function(id){
 				for (var i = self.tiles.length - 1; i >= 0; i--) {
@@ -202,6 +205,17 @@ $(document).ready(function(){
 			},
 			setEnabled: function(enabled){
 				self.enabled = enabled;
+			},
+			distributeStrength: function(colour){
+				var reinforcements = parseInt($('.player-list div .'+colour + '.size').text());
+				for (var i = reinforcements - 1; i >= 0; i--) {
+					var allTilesForColour = getAllTilesOfColour(colour)
+					var tile = this.getRandomTile(allTilesForColour);
+					while(tile.strength>=10){
+						tile = this.getRandomTile(allTilesForColour)
+					}
+					tile.setStrength(tile.strength + 1);
+				};
 			}
 		};
 	}

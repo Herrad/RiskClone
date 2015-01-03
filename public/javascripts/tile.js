@@ -52,7 +52,6 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 		enabled:self.enabled,
 		top:self.top,
 		left:self.left,
-		neighbours:self.neighbours,
 		colour:self.colour,
 		id: self.id,
 		strength:0,
