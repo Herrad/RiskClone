@@ -6,10 +6,9 @@ $(document).ready(function(){
 	image.src = '/images/hexagon-small.png';
 	
 
-	var GameBoard = function(turns){
+	var GameBoard = function(){
 		this.tiles = [];
 		this.selectedTile = null;
-		this.turns = turns;
 		var maxColours = 0;
 		var currentColours = {
 				purple:0,
@@ -157,13 +156,33 @@ $(document).ready(function(){
 					blobCounts.push(counted.length);
 				};
 				return blobCounts.sort(function(a, b){return b-a});
+			},
+			getHomeBlockIds:function(colour){
+				var colourTileIds = getAllTilesOfColour(colour)
+				var blocks = [];
+				for (var i = colourTileIds.length - 1; i >= 0; i--) {
+					var tileId = colourTileIds[i];
+					var counted = [tileId];
+					var tile = this.findTileBy(tileId);
+					tile.countAlliedNeighbours(counted)
+					blocks.push(counted);
+				};
+				return blocks.sort(function(a, b){return b-a})[0];
+			},
+			getHomeBlockFor: function(colour){
+				var homeBlock = [],
+					homeBlockIds = this.getHomeBlockIds(colour);
+				for (var i = homeBlockIds.length - 1; i >= 0; i--) {
+					homeBlock.push(this.findTileBy(homeBlockIds[i]));
+				};
+				return homeBlock;
 			}
 		};
 	}
 
 	image.onload = function(){
-		var turns = new Turns();
-		var gameBoard = new GameBoard(turns);
+		var gameBoard = new GameBoard();
+		var turns = new Turns(gameBoard);
 		gameBoard.generateTiles(this);
 		for (var i = turns.colours.length - 1; i >= 0; i--) {
 			var colour = turns.colours[i];
