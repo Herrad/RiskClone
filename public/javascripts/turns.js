@@ -92,7 +92,6 @@ var Turns = function(gameBoard){
 		var nextPlayer = $($('.player-list div')[currentPlayerIndex]);
 		nextPlayer.toggleClass('selected');
 		gameBoard.clearSelection();
-		gameBoard.setBiggestBlobNumbers(self.colours);
 	}
 
 	$('.end-turn').click(function(){
