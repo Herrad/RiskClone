@@ -8,6 +8,7 @@ $(document).ready(function(){
 
 var TurtleStrategy = function(colour, gameBoard){
 	this.gameBoard = gameBoard;
+	this.defeated = false;
 	var self = this;
 	function upgrade(callback){
 		callback();
@@ -15,6 +16,11 @@ var TurtleStrategy = function(colour, gameBoard){
 
 	function launchAttack(callback){
 		var homeBlock = self.gameBoard.getHomeBlockFor(colour);
+		if(!homeBlock.length) {
+			self.defeated = true;
+			return callback();
+		}
+
 		var enemyNeighbours = [];
 		var homeTile = {strength: 1},
 			iterations = 0;
@@ -45,12 +51,13 @@ var TurtleStrategy = function(colour, gameBoard){
 				} else {
 					callback();
 				}
-			}, 1000)
-		}, 1000);
+			}, 500)
+		}, 100);
 	}
 
 	return{
 		enact:function(callback){
+			if(self.defeated) callback();
 			launchAttack(callback);
 		}
 	}
@@ -97,6 +104,7 @@ var Turns = function(gameBoard){
 		];
 	this.colours = ['purple', 'pink', 'orange', 'green'];
 	this.currentAiPlayer = this.aiPlayers[currentPlayerIndex]
+	this.interval = 0;
 	var self = this;
 
 	function moveTurnAlong(){
@@ -121,10 +129,14 @@ var Turns = function(gameBoard){
 	return{
 		colours:self.colours,
 		start:function(){
-			setInterval(function(){
+			self.interval = setInterval(function(){
 				self.currentAiPlayer = self.aiPlayers[currentPlayerIndex];
 				gameBoard.setEnabled(self.currentAiPlayer.isPlayer);
 				self.currentAiPlayer.takeTurn();
+				if(gameBoard.isOver()){
+					clearInterval(self.interval);
+					$('.end-turn').prop('disabled', true);
+				}
 			}, 1000);
 		}
 	}

@@ -227,6 +227,9 @@ $(document).ready(function(){
 			getHomeBlockFor: function(colour){
 				var homeBlock = [],
 					homeBlockIds = this.getHomeBlockIds(colour);
+				if(!homeBlockIds || homeBlockIds.length <= 0){
+					return homeBlock;
+				}
 				for (var i = homeBlockIds.length - 1; i >= 0; i--) {
 					homeBlock.push(this.findTileBy(homeBlockIds[i]));
 				};
@@ -260,6 +263,17 @@ $(document).ready(function(){
 					self.participatedTiles[tile].hasActed(false);
 				}
 				self.participatedTiles = [];
+			},
+			isOver: function(){
+				var enabledTiles = getEnabledTiles(),
+					initialColour = enabledTiles[0].getColour();
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(enabledTiles[i].getColour() != initialColour){
+						return false;
+					}
+				};
+				self.enabled = false;
+				return true;
 			}
 		};
 	}
