@@ -126,13 +126,6 @@ $(document).ready(function(){
 				tile.generateNeighbours();
 
 
-				// for(var i = 0; i < self.tiles.length; i++){
-				// 	for (var j = self.tiles.length - 1; j >= 0; j--) {
-				// 		if(self.tiles[i].id === self.tiles[j].id) continue;
-				// 		self.tiles[i].addNeighbourIfNear(self.tiles[j]);
-				// 	};
-				// }
-
 				var enabledTiles = getEnabledTiles();
 				self.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
