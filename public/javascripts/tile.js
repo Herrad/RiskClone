@@ -54,6 +54,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 		colour:self.colour,
 		id: self.id,
 		strength:0,
+		canAct:true,
 
 		generateNeighbours: function(){
 			if(Object.keys(self.neighbours).length >= self.maxNeighbours){
@@ -182,6 +183,14 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 				if(tile === enabledNeighbours[i]) return true;
 			};
 			return false;
+		},
+		hasActed:function(hasActed){
+			self.canAct = !hasActed;
+			if(hasActed){
+				$('#tile'+ self.id).addClass('acted');
+			} else {
+				$('#tile'+ self.id).removeClass('acted');
+			}
 		}
 	}
 

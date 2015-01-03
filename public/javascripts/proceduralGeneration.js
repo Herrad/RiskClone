@@ -9,6 +9,7 @@ $(document).ready(function(){
 		this.tiles = [];
 		this.selectedTile = null;
 		this.enabled = true;
+		this.participatedTiles = [];
 		var maxColours = 0;
 		var currentColours = {
 				purple:0,
@@ -58,6 +59,7 @@ $(document).ready(function(){
 		}
 
 		function toggleSelection(e, tile){
+			if(!self.selectedTile && self.participatedTiles.indexOf(tile) != -1) return;
 			var target = $(e.target);
 			target.toggleClass('selected');
 			var targetTop = parseInt(target.css('top').replace('px', '')),
@@ -73,6 +75,11 @@ $(document).ready(function(){
 				target.css('left', targetLeft+3+'px');
 				target.css('top', targetTop+3+'px');
 			}
+		}
+
+		function participated(tile){
+			self.participatedTiles.push(tile);
+			tile.hasActed(true);
 		}
 
 		return {
@@ -122,6 +129,8 @@ $(document).ready(function(){
 				if(source.strength <= 1 || target.strength >= 10) return;
 				source.setStrength(source.strength - 1);
 				target.setStrength(target.strength + 1);
+				participated(self.selectedTile);
+
 			},
 			launchAttack:function(enemyTile){
 				var attackRoll = this.rollDice(self.selectedTile.strength);
@@ -137,6 +146,7 @@ $(document).ready(function(){
 					self.selectedTile.lost();
 					this.lastAttackVictory = false;
 				}
+				participated(self.selectedTile);
 				this.clearSelection();
 				this.setBiggestBlobNumbers(['purple', 'pink', 'orange', 'green']);
 
@@ -244,6 +254,12 @@ $(document).ready(function(){
 					}
 					tile.upgrade(tile.strength + 1, tile.id);
 				};
+			},
+			resetParticipation:function(){
+				for(var tile in self.participatedTiles){
+					self.participatedTiles[tile].hasActed(false);
+				}
+				self.participatedTiles = [];
 			}
 		};
 	}

@@ -18,9 +18,9 @@ var TurtleStrategy = function(colour, gameBoard){
 		var enemyNeighbours = [];
 		var homeTile = {strength: 1},
 			iterations = 0;
-		while(!enemyNeighbours.length || homeTile.strength === 1){
+		while(!enemyNeighbours.length || homeTile.strength === 1 || !homeTile.canAct){
 			if(iterations > 50){
-				upgrade(callback);
+				return upgrade(callback);
 			}
 			var homeIndex = Math.floor(Math.random() * homeBlock.length);
 			homeTile = homeBlock[homeIndex];
@@ -110,6 +110,7 @@ var Turns = function(gameBoard){
 		var nextPlayer = $($('.player-list div')[currentPlayerIndex]);
 		nextPlayer.toggleClass('selected');
 		gameBoard.clearSelection();
+		gameBoard.resetParticipation();
 	}
 
 	$('.end-turn').click(function(e){
