@@ -212,12 +212,14 @@ $(document).ready(function(){
 				self.enabled = enabled;
 			},
 			distributeStrength: function(colour){
-				var reinforcements = parseInt($('.player-list div .'+colour + '.size').text());
+				var reinforcements = parseInt($('.player-list div.'+colour + ' span.size').text());
 				for (var i = reinforcements - 1; i >= 0; i--) {
 					var allTilesForColour = getAllTilesOfColour(colour)
 					var tile = this.getRandomTile(allTilesForColour);
-					while(tile.strength>=10){
+					var iterations = 0;
+					while(tile.strength>=10 && iterations < allTilesForColour.length * 2){
 						tile = this.getRandomTile(allTilesForColour)
+						iterations++;
 					}
 					tile.setStrength(tile.strength + 1);
 				};

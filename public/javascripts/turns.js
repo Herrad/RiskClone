@@ -89,7 +89,7 @@ var Turns = function(gameBoard){
 	var self = this;
 
 	function moveTurnAlong(){
-		// gameBoard.distributeStrength(self.colours[currentPlayerIndex]);
+		gameBoard.distributeStrength(self.colours[currentPlayerIndex]);
 		var currentPlayer = $('.player-list div.selected');
 		currentPlayer.toggleClass('selected');
 		currentPlayerIndex++;
@@ -101,8 +101,9 @@ var Turns = function(gameBoard){
 		gameBoard.clearSelection();
 	}
 
-	$('.end-turn').click(function(){
-		moveTurnAlong(self.gameBoard);
+	$('.end-turn').click(function(e){
+		if(!e.originalEvent || self.currentAiPlayer.isPlayer)
+			moveTurnAlong(self.gameBoard);
 	});
 
 	return{
