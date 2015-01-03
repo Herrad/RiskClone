@@ -42,7 +42,7 @@ var AiPlayer = function(colour, gameBoard){
 	this.gameBoard = gameBoard
 	this.strategy = new TurtleStrategy(colour,gameBoard);
 	this.hasActed = false;
-	self = this;
+	var self = this;
 
 	return{
 		takeTurn:function(){
