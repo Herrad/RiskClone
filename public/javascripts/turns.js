@@ -13,13 +13,15 @@ var TurtleStrategy = function(colour, gameBoard){
 		enact:function(callback){
 			var homeBlock = self.gameBoard.getHomeBlockFor(colour);
 			var enemyNeighbours = [];
-			while(!enemyNeighbours.length){
+			var homeTile = {strength: 1};
+			while(!enemyNeighbours.length || homeTile.strength === 1){
 				var homeIndex = Math.floor(Math.random() * homeBlock.length);
-				enemyNeighbours = homeBlock[homeIndex].getEnemyNeighbours()
+				homeTile = homeBlock[homeIndex];
+				enemyNeighbours = homeTile.getEnemyNeighbours()
 			}
 				var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
 					enemyNeighbour = enemyNeighbours[enemyNeighboursIndex],
-					sourceTileId = homeBlock[homeIndex].id,
+					sourceTileId = homeTile.id,
 					sourceTile = $('#tile' + sourceTileId),
 					targetTileId = enemyNeighbour.id,
 					targetTile = $('#tile' + targetTileId);

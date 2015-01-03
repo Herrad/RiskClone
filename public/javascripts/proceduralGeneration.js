@@ -110,6 +110,7 @@ $(document).ready(function(){
 				}else{
 					self.selectedTile.setStrength(1);
 				}
+				this.clearSelection();
 
 			},
 			generateTiles: function(image){
