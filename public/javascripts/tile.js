@@ -1,6 +1,6 @@
 
 
-var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilities){
+var Tile = function(top, left, id, enabled, imageWidth, gameBoard){
 	this.top = top;
 	this.left = left;
 	this.neighbours = {};
@@ -11,7 +11,6 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 	this.halfImageWidth = imageWidth/2;
 	this.threeQuartersImageWidth = this.halfImageWidth + this.halfImageWidth/2;
 	this.gameBoard = gameBoard;
-	this.specialAbilities = specialAbilities;
 
 	this.neighbourPositions = {
 		0:{top:this.top-this.imageWidth, left:this.left},
@@ -24,7 +23,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 
 	var self = this;
 
-	function generateNeighbourAt(position, enabled, fromTile){
+	function generateNeighbourAt(position, enabled, hill, fromTile){
 		for(var k in self.neighbours){
 			if(k === 'position'+position){
 				return;
@@ -37,7 +36,12 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			enabled = false;
 		}
 
-		var neighbour = new Tile(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard, {});
+		var neighbour = null
+		if(hill && enabled){
+			neighbour =  new Hill(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
+		} else {
+			neighbour = new Tile(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
+		}
 		for(var i = 0; i < self.gameBoard.tiles.length; i++){
 			self.gameBoard.tiles[i].addNeighbourIfNear(neighbour);
 		}
@@ -65,6 +69,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 		id: self.id,
 		strength:0,
 		canAct:true,
+		owner:0,
 
 		generateNeighbours: function(){
 			if(Object.keys(self.neighbours).length >= self.maxNeighbours){
@@ -73,7 +78,11 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 
 			for(var position = 0; position<=self.maxNeighbours; position++){
 				var enabled = this.percentageGreaterThan(30);
-				generateNeighbourAt(position, enabled, this);
+				var hill = false;
+				if(enabled){
+					hill = this.percentageGreaterThan(999);
+				}
+				generateNeighbourAt(position, enabled, hill, this);
 			}
 			
 			var enabledNeighbours = this.getEnabledNeighbours();
@@ -88,7 +97,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 
 		append: function(){
 			var disabledClass = self.enabled ? '' : ' disabled';
-			var colour = self.colour ? ' '+self.colour : '';
+			var colour = this.colour ? ' '+this.colour : '';
 			var strength = this.strength ? this.strength : '';
 			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px">'+strength+'</div>');
 			var currentObj = this;
@@ -102,7 +111,7 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			var attackRoll = rollDice(this.strength),
 				defendRoll = rollDice(enemyTile.strength);
 			if(attackRoll > defendRoll){
-				enemyTile.conquered(this.getColour());
+				enemyTile.conquered(this.getColour(), this.owner);
 				enemyTile.setStrength(this.strength - 1);
 				this.setStrength(1);
 				this.won();
@@ -122,6 +131,24 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 			target.setStrength(target.strength + 1);
 			gameBoard.participated(this);
 			gameBoard.participated(target);
+		},
+		toggleSelection:function(e){
+			if(!gameBoard.selectedTile() && !this.canAct) return;
+			var target = $(e.target);
+			target.toggleClass('selected');
+			var targetTop = parseInt(target.css('top').replace('px', '')),
+				targetLeft = parseInt(target.css('left').replace('px', ''));
+
+			if(target.hasClass('selected')){
+				gameBoard.setSelectedTile(this);
+				target.css('left', targetLeft-3+'px');
+				target.css('top', targetTop-3+'px');
+			}
+			else{
+				gameBoard.setSelectedTile(null);
+				target.css('left', targetLeft+3+'px');
+				target.css('top', targetTop+3+'px');
+			}
 		},
 		addNeighbourAt: function(newNeighbourIndex, newNeighbour){
 			self.neighbours['position' + newNeighbourIndex] = newNeighbour;
@@ -148,9 +175,10 @@ var Tile = function(top, left, id, enabled, imageWidth, gameBoard, specialAbilit
 				}
 			}
 		},
-		conquered: function(newColour){
+		conquered: function(newColour, conqueredBy){
 			var oldColour = this.colour;
 			this.colour = newColour;
+			this.owner = conqueredBy;
 			$('#tile' + self.id).removeClass(oldColour);
 			$('#tile' + self.id).addClass(this.colour);
 		},

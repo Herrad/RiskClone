@@ -38,12 +38,12 @@ $(document).ready(function(){
 				maxedColours.push(selection);
 				if(maxedColours.length === 4){
 					currentColours[selection]++;
-					return selection;
+					return {colour:selection, index:selectedIndex};
 				}
 				return getRandomColour(maxedColours);
 			} else {
 				currentColours[selection]++;
-				return selection;
+				return {colour:selection, index:selectedIndex};
 			}
 		};
 
@@ -89,7 +89,7 @@ $(document).ready(function(){
 				var selectedTile = self.selectedTile;
 				if(e.originalEvent){
 					if(!self.enabled) return;
-					if(!selectedTile && tile.colour != 'purple') return;
+					if(!selectedTile && tile.owner != 0) return;
 				} 
 					
 				if(selectedTile && selectedTile != tile){
@@ -105,25 +105,7 @@ $(document).ready(function(){
 				}
 				if(!selectedTile && tile.strength === 1) return;
 
-				this.toggleSelection(e, tile);
-			},
-			toggleSelection:function(e, tile){
-				if(!this.selectedTile() && !tile.canAct) return;
-				var target = $(e.target);
-				target.toggleClass('selected');
-				var targetTop = parseInt(target.css('top').replace('px', '')),
-					targetLeft = parseInt(target.css('left').replace('px', ''));
-
-				if(target.hasClass('selected')){
-					this.setSelectedTile(tile);
-					target.css('left', targetLeft-3+'px');
-					target.css('top', targetTop-3+'px');
-				}
-				else{
-					this.setSelectedTile(null);
-					target.css('left', targetLeft+3+'px');
-					target.css('top', targetTop+3+'px');
-				}
+				tile.toggleSelection(e);
 			},
 			selectedTile:function(){
 				return self.selectedTile;
@@ -134,7 +116,7 @@ $(document).ready(function(){
 			generateTiles: function(image){
 				var halfCanvasWidth = Math.floor($('.canvas').width()/2),
 					halfCanvasHeight = Math.floor($('.canvas').height()/2),
-					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, image.width, this, {});
+					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, image.width, this);
 				tile.append();
 				tile.generateNeighbours();
 
@@ -143,8 +125,8 @@ $(document).ready(function(){
 				self.maxColours = Math.floor(enabledTiles.length/4);
 				for (var i = enabledTiles.length - 1; i >= 0; i--) {
 					if(!enabledTiles[i].enabled) continue;
-					var colour = getRandomColour([]);
-					enabledTiles[i].conquered(colour);
+					var colourObj = getRandomColour([]);
+					enabledTiles[i].conquered(colourObj.colour, colourObj.index);
 				};
 				this.setTileStrengths('purple');
 				this.setTileStrengths('pink');
