@@ -80,7 +80,11 @@ $(document).ready(function(){
 				target.css('top', targetTop+3+'px');
 			},
 			clicked: function(e, tile){
-				if(e.originalEvent && !self.enabled) return;
+				if(e.originalEvent){
+					if(!self.enabled) return;
+					if(tile.colour != 'purple') return;
+				} 
+					
 				if(self.selectedTile && self.selectedTile != tile){
 					this.launchAttack(tile);
 					return;
