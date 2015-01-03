@@ -1,7 +1,6 @@
 var gameboard = null;
 $(document).ready(function(){
-	
-	var canvas = $('.canvas');
+
 	var image = new Image();
 	image.src = '/images/hexagon-small.png';
 	
@@ -122,9 +121,17 @@ $(document).ready(function(){
 
 			},
 			generateTiles: function(image){
-				var tile = new Tile(378, 378, canvas, 0, true, image.width, this);
+				var tile = new Tile(378, 378, 0, true, image.width, this);
 				tile.append();
 				tile.generateNeighbours();
+
+
+				// for(var i = 0; i < self.tiles.length; i++){
+				// 	for (var j = self.tiles.length - 1; j >= 0; j--) {
+				// 		if(self.tiles[i].id === self.tiles[j].id) continue;
+				// 		self.tiles[i].addNeighbourIfNear(self.tiles[j]);
+				// 	};
+				// }
 
 				var enabledTiles = getEnabledTiles();
 				this.maxColours = Math.floor(enabledTiles.length/4);
@@ -143,9 +150,14 @@ $(document).ready(function(){
 				for (var i = colouredTiles.length*5 - 1; i >= 0; i--) {
 					var selectedTile = null;
 					var selectedStrength = 100000;
-					while(selectedStrength > colouredTiles.length/5){
+					var iterations = 0;
+					while(selectedStrength > colouredTiles.length/5 - 1){
+						if(iterations > 40){
+							throw new Error('attempted to set strength too many times');
+						}
 						selectedTile = this.getRandomTile(colouredTiles);
 						selectedStrength = selectedTile.strength;
+						iterations++;
 					}
 					selectedTile.setStrength(selectedStrength + 1);
 				};

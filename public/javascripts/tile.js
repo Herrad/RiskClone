@@ -1,9 +1,8 @@
 
 
-var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colour){
+var Tile = function(top, left, id, enabled, imageWidth, gameBoard, colour){
 	this.top = top;
 	this.left = left;
-	this.canvas = canvas;
 	this.neighbours = {};
 	this.maxNeighbours = 5;
 	this.id = id;
@@ -37,7 +36,7 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 			enabled = false;
 		}
 
-		var neighbour = new Tile(neighbourTop, neighbourLeft, self.canvas, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
+		var neighbour = new Tile(neighbourTop, neighbourLeft, ++self.gameBoard.globalId, enabled, self.imageWidth, self.gameBoard);
 		for(var i = 0; i < self.gameBoard.tiles.length; i++){
 			self.gameBoard.tiles[i].addNeighbourIfNear(neighbour);
 		}
@@ -81,14 +80,13 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 			var colour = self.colour ? ' '+self.colour : '';
 			var strength = this.strength ? this.strength : '';
 			var html = $('<div id="tile'+self.id+'" class="tile'+disabledClass+ colour+'" style="top:'+self.top+'px;left:'+self.left+'px">'+strength+'</div>');
+			var currentObj = this;
 			if(self.enabled){
-				var currentObj = this;
 				html.click(function(el){self.gameBoard.clicked(el,currentObj)});
 			}
-			self.gameBoard.tiles.push(this);
-			self.canvas.append(html);
+			self.gameBoard.tiles.push(currentObj);
+			$('.canvas').append(html);
 		},
-
 		addNeighbourAt: function(newNeighbourIndex, newNeighbour){
 			self.neighbours['position' + newNeighbourIndex] = newNeighbour;
 		},
@@ -108,6 +106,7 @@ var Tile = function(top, left, canvas, id, enabled, imageWidth, gameBoard, colou
 				if(self.neighbourPositions[k].top === top && self.neighbourPositions[k].left === left){
 					var position = parseInt(k);
 					this.addNeighbourAt(position, tile);
+
 					var neighbourEquivalent = position + 3 < 6 ? position + 3 :  position - 3;
 					tile.addNeighbourAt(neighbourEquivalent, this);
 				}
