@@ -14,6 +14,24 @@ var TurtleStrategy = function(colour, gameBoard){
 		callback();
 	}
 
+	function reallocate(homeBlock, callback){
+		var strongestHomeTile = homeBlock.sort(function(a, b){ return b.strength - a.strength})[0],
+			alliedNeighbours = strongestHomeTile.getAlliedNeighbours();
+		if(!alliedNeighbours.length) return upgrade(callback);
+		
+		alliedNeighboursIndex = Math.floor(Math.random()* alliedNeighbours.length);
+
+		$('#tile' + strongestHomeTile.id).click();
+		for(var i = 0; i < strongestHomeTile.strength - 1; i++){
+			if(alliedNeighbours[alliedNeighboursIndex].strength >= 10) continue;
+			setTimeout(function(){
+				var alliedId = alliedNeighbours[alliedNeighboursIndex].id;
+				$('#tile' + alliedId).click();
+				callback();
+			}, 100);
+		}
+	}
+
 	function launchAttack(callback){
 		var homeBlock = self.gameBoard.getHomeBlockFor(colour);
 		if(!homeBlock.length) {
@@ -21,40 +39,36 @@ var TurtleStrategy = function(colour, gameBoard){
 			return callback();
 		}
 
-		var enemyNeighbours = [];
 		var homeTile = {strength: 1},
-			iterations = 0;
-		while(!enemyNeighbours.length || homeTile.strength === 1 || !homeTile.canAct){
-			if(iterations > 50){
-				return upgrade(callback);
-			}
-			var homeIndex = Math.floor(Math.random() * homeBlock.length);
-			homeTile = homeBlock[homeIndex];
+			iterations = 0,
+			homeIndex = Math.floor(Math.random() * homeBlock.length),
+			homeTile = homeBlock[homeIndex],
 			enemyNeighbours = homeTile.getEnemyNeighbours();
-			iterations++;
-		}
-		var enemyNeighboursIndex = Math.floor(Math.random() * enemyNeighbours.length),
-			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex];
 
-		iterations = 0;
-		while(enemyNeighbour.strength >= homeTile.strength * 3){
-			enemyNeighboursIndex ++;
-			if(enemyNeighboursIndex >= enemyNeighbours.length)
-				enemyNeighboursIndex = 0;
-			enemyNeighbour = enemyNeighbours[enemyNeighboursIndex];
-			if(iterations >= 5){
-				return upgrade(callback);
+			while(!enemyNeighbours.length && homeTile.strength > 1){
+				if(iterations > 50){
+					return reallocate(callback);
+				}
+				homeIndex = Math.floor(Math.random() * homeBlock.length),
+				homeTile = homeBlock[homeIndex],
+				enemyNeighbours = homeTile.getEnemyNeighbours();
+				iterations++;
 			}
-			iterations++;
-		}
 
-		var sourceTile = $('#tile' + homeTile.id),
-			targetTile = $('#tile' + enemyNeighbour.id);
+		for (var i = enemyNeighbours.length - 1; i >= 0; i--) {
+			if(enemyNeighbours[i].strength < homeTile.strength - 1){
+				var sourceTile = $('#tile' + homeTile.id),
+					targetTile = $('#tile' + enemyNeighbours[i].id);
 
-		makeAttack(sourceTile, targetTile, callback);
+				return fireClicks(sourceTile, targetTile, callback);
+			}
+			if(enemyNeighbours.strength > homeTile.strength + 3) continue;
+		};
+
+		return reallocate(homeBlock, callback);
 	}
 
-	function makeAttack(sourceTile, targetTile, callback){
+	function fireClicks(sourceTile, targetTile, callback){
 		setTimeout(function choose(){
 			sourceTile.click();
 			setTimeout(function attack(){
