@@ -25,11 +25,11 @@ body {
 		.canvas .tile.orange {background: url('../images/orange-hexagon.png');}
 		.canvas .tile.green {background: url('../images/green-hexagon.png');}
 		.canvas .tile.grey {background: url('../images/grey-hexagon.png');}
-		.canvas .tile.selected {border:3px solid red;z-index: 100;background-color: rgba(255,0,0,0.5);}
+		.canvas .tile.selected1 {border:3px solid red;z-index: 100;background-color: rgba(255,0,0,0.5);}
 		.canvas .tile.highlighted {background: url('../images/highlighted-hexagon-small.png');}
 		.canvas .tile.disabled {background: url('../images/disabled-hexagon-small.png');}
 		
-		.canvas .tile.upgrading:after {content:"Upgraded";top:6px;position:absolute; left:5px;padding:3px;font-size:12px;z-index: 101;background-color: #61D5E4;}
-		.canvas .tile.won:after {content:"Won";position:absolute; top:5px; left:16px;padding:3px;font-size:12px;z-index: 101;background-color: #5EFFA1;border:1px green dashed;}
-		.canvas .tile.lost:after {content:"Lost!";position:absolute; top:6px; left:18px;padding:3px;font-size:12px;z-index: 101;background-color: #FF777A;border:1px red dashed;}
-		.canvas .tile.acted:after {content:"X";position:absolute; top:40px; left:24px;padding:3px;font-size:12px;z-index: 101;background-color: #555555;border:1px grey dashed;}
+		.canvas1 .tile.upgrading:after {content:"";top:6px;position:absolute; left:5px;padding:3px;font-size:12px;z-index: 101;background-color: #61D5E4;}
+		.canvas1 .tile.won:after {content:"";position:absolute; top:5px; left:16px;padding:3px;font-size:12px;z-index: 101;background-color: #5EFFA1;border:1px green dashed;}
+		.canvas1 .tile.lost:after {content:"";position:absolute; top:6px; left:18px;padding:3px;font-size:12px;z-index: 101;background-color: #FF777A;border:1px red dashed;}
+		.canvas1 .tile.acted:after {content:"";position:absolute; top:40px; left:24px;padding:3px;font-size:12px;z-index: 101;background-color: #555555;border:1px grey dashed;}

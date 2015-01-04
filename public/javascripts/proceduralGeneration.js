@@ -47,17 +47,6 @@ $(document).ready(function(){
 			}
 		};
 
-		function getAllTilesOfColour(colour){
-			var tileIdsMatchingColour = [],
-				enabledTiles = getEnabledTiles();
-			for (var i = enabledTiles.length - 1; i >= 0; i--) {
-				if(enabledTiles[i].colour === colour && tileIdsMatchingColour.indexOf(enabledTiles[i].id) === -1){
-					tileIdsMatchingColour.push(enabledTiles[i].id);
-				}
-			};
-			return tileIdsMatchingColour;
-		}
-
 		function participated(tile){
 			self.participatedTiles.push(tile);
 			tile.setHasActed(true);
@@ -134,7 +123,7 @@ $(document).ready(function(){
 				this.setTileStrengths('green');
 			},
 			setTileStrengths:function(colour){
-				var colouredTiles = getAllTilesOfColour(colour);
+				var colouredTiles = this.getAllTilesOfColour(colour);
 				for (var i = colouredTiles.length*5 - 1; i >= 0; i--) {
 					var selectedTile = null;
 					var selectedStrength = 10;
@@ -165,7 +154,7 @@ $(document).ready(function(){
 				};
 			},
 			getBlobCountsForColour:function(colour){
-				var colourTileIds = getAllTilesOfColour(colour)
+				var colourTileIds = this.getAllTilesOfColour(colour)
 				var blobCounts = [];
 				for (var i = colourTileIds.length - 1; i >= 0; i--) {
 					var tileId = colourTileIds[i];
@@ -177,7 +166,7 @@ $(document).ready(function(){
 				return blobCounts.sort(function(a, b){return b-a});
 			},
 			getHomeBlockIds:function(colour){
-				var colourTileIds = getAllTilesOfColour(colour)
+				var colourTileIds = this.getAllTilesOfColour(colour)
 				var blocks = [];
 				for (var i = colourTileIds.length - 1; i >= 0; i--) {
 					var tileId = colourTileIds[i];
@@ -212,8 +201,9 @@ $(document).ready(function(){
 			distributeStrength: function(colour){
 				var reinforcements = parseInt($('.player-list div.'+colour + ' span.size').text());
 				for (var i = reinforcements - 1; i >= 0; i--) {
-					var allTilesForColour = getAllTilesOfColour(colour)
+					var allTilesForColour = this.getAllTilesOfColour(colour)
 					var tile = this.getRandomTile(allTilesForColour);
+					if(!tile) return;
 					var iterations = 0;
 					while(tile.strength>=10 && iterations < allTilesForColour.length * 2){
 						tile = this.getRandomTile(allTilesForColour)
@@ -224,6 +214,17 @@ $(document).ready(function(){
 						tile.upgrade(tile.strength + 1, tile.id);
 					}
 				};
+			},
+
+			 getAllTilesOfColour: function(colour){
+				var tileIdsMatchingColour = [],
+					enabledTiles = getEnabledTiles();
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(enabledTiles[i].colour === colour && tileIdsMatchingColour.indexOf(enabledTiles[i].id) === -1){
+						tileIdsMatchingColour.push(enabledTiles[i].id);
+					}
+				};
+				return tileIdsMatchingColour;
 			},
 			resetParticipation:function(){
 				for(var tile in self.participatedTiles){
