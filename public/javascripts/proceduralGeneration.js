@@ -102,10 +102,10 @@ $(document).ready(function(){
 			setSelectedTile: function(tile){
 				self.selectedTile = tile;
 			},
-			generateTiles: function(image){
+			generateTiles: function(imageWidth){
 				var halfCanvasWidth = Math.floor($('.canvas').width()/2),
 					halfCanvasHeight = Math.floor($('.canvas').height()/2),
-					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, image.width, this);
+					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, imageWidth, this);
 				tile.append();
 				tile.generateNeighbours();
 
@@ -250,7 +250,7 @@ $(document).ready(function(){
 	image.onload = function(){
 		var gameBoard = new GameBoard();
 		var turns = new Turns(gameBoard);
-		gameBoard.generateTiles(this);
+		gameBoard.generateTiles(32);
 		gameBoard.setBiggestBlobNumbers(turns.colours);
 		turns.start();
 	};
