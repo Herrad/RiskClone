@@ -1,153 +1,257 @@
+var gameboard = null;
 $(document).ready(function(){
-	var selectors = {
-		allTiles:'td',
-		endTurn: '.endTurn'
-	},
-	sourceTile = null,
-	playerList = [
-		{colour:'purple'},
-		{colour:'green'},
-		{colour:'red'},
-		{colour:'orange'}
-	],
-	currentTurn = 0;
 
-	$(selectors.allTiles).click(function(e){
-		if(currentTurn > 0) return;
-		var target = $(e.target);
+	var image = new Image();
+	image.src = '/images/hexagon-small.png';
+	
 
-		if(sourceTile && !target.hasClass(playerList[currentTurn].colour)){
-			attack(target);
-		} 
-		if(target.hasClass(playerList[currentTurn].colour)) {
-			setSourceTile(target);
-		}
-	});
+	var GameBoard = function(){
+		this.tiles = [];
+		this.selectedTile = null;
+		this.enabled = true;
+		this.participatedTiles = [];
+		var maxColours = 0;
+		var currentColours = {
+				purple:0,
+				green:0,
+				orange:0,
+				pink:0
+			},
+			self = this;
 
-	function attack(target){
-		if(!getSurroundings().contains(target)) return;
-
-		var sourceText = sourceTile.text(),
-		sourceValue = rollDice(sourceText),
-		targetValue = rollDice(target.text());
-
-		if(sourceValue > targetValue){
-			target.text(sourceText-1);
-			sourceTile.text(1);
-			target.removeClass();
-			target.addClass(sourceTile.attr('class'));
-			console.log('won ' + sourceValue + 'v'+targetValue);
-		} else {
-			sourceTile.text(1);
-			console.log('lost ' + sourceValue + 'v'+targetValue);
-		}
-		clearSourceTile();
-	}
-
-	function rollDice(numberOfDice){
-		var runningTotal = 0;
-		for(var x = 0; x < numberOfDice; x++){
-			runningTotal += 1 + Math.floor(Math.random() * 6);
-		}
-		return runningTotal;
-	}
-
-	function setSourceTile(target){
-		sourceIsTarget = sourceTile && sourceTile.data('x') === target.data('x') && sourceTile.data('y') === target.data('y');
-		clearSourceTile();
-		if(sourceIsTarget || target.hasClass('disabled'))return;
-
-		sourceTile = target;
-		sourceTile.addClass('blue')
-	}
-
-	function clearSourceTile(){
-		if(!sourceTile) return;
-		sourceTile.removeClass('blue')
-		sourceTile = null;
-	}
-
-	function getSurroundings(){
-
-		var sourceTileX = sourceTile.data('x')-1;
-
-		var surroundings = {
-			east: sourceTile.next(),
-			west: sourceTile.prev()
-		}
-
-		var rowAbove = sourceTile.parent().prev();
-		if(rowAbove){
-			surroundings.north = $(rowAbove.children()[sourceTileX]);
-			surroundings.northEast = surroundings.north.next();
-			surroundings.northWest = surroundings.north.prev();
-		} 
-
-		var rowBelow = sourceTile.parent().next();
-		if(rowBelow){
-			surroundings.south = $(rowBelow.children()[sourceTileX]);
-			surroundings.southEast = surroundings.south.next();
-			surroundings.southWest = surroundings.south.prev();
-		} 
-		for(var k in surroundings){
-			if(surroundings[k] && $(surroundings[k]).hasClass('disabled')){
-				surroundings[k] = null;
-			}
-		}
-		surroundings.contains = function(target){
-			for(var k in surroundings){
-				var surrounding = $(surroundings[k]);
-				if(surrounding && surrounding.data('x') == target.data('x') && surrounding.data('y') == target.data('y')){
-					return true;
+		function getEnabledTiles(){
+			var enabledTiles = [];
+			for (var i = self.tiles.length - 1; i >= 0; i--) {
+				if(self.tiles[i].enabled){
+					enabledTiles.push(self.tiles[i]);
 				}
 			}
-			return false;
-		}
+			return enabledTiles;
+		};
 
-		return surroundings;
-	}
+		function getRandomColour(maxedColours){
+			var	iterations = 0,
+				selectedIndex = Math.round(Math.random() * 3),
+				selection = Object.keys(currentColours)[selectedIndex];
 
-
-	$(selectors.endTurn).click(function(){
-
-		addWinnings();
-
-		currentTurn++;
-		if(currentTurn >= playerList.length){
-			currentTurn = 0;
-		}
-		clearSourceTile();
-
-		highlightCurrentPlayer();
-	});
-
-	function addWinnings(){
-		var totalTroops = 0;
-		var currentPlayerTiles = $('td.'+playerList[currentTurn].colour)
-		currentPlayerTiles.each(function(index, tile){
-			totalTroops += parseInt($(tile).text());
-		});
-		for(var i = 0; i < totalTroops; i++){
-			var winningTileText = 10;
-			tried = 0;
-			while(tried < 20){
-				var winningTileIndex = Math.floor(Math.random() * currentPlayerTiles.length);
-
-				var winningTile = $(currentPlayerTiles[winningTileIndex]);
-				winningTileText = parseInt(winningTile.text());
-				if(winningTileText < 10){
-					winningTile.text(winningTileText+1);
-					break;
+			if(currentColours[selection] >= self.maxColours) {
+				maxedColours.push(selection);
+				if(maxedColours.length === 4){
+					currentColours[selection]++;
+					return {colour:selection, index:selectedIndex};
 				}
-				tried++;
+				return getRandomColour(maxedColours);
+			} else {
+				currentColours[selection]++;
+				return {colour:selection, index:selectedIndex};
 			}
+		};
 
+		function participated(tile){
+			self.participatedTiles.push(tile);
+			tile.setHasActed(true);
 		}
+
+		return {
+			tiles:self.tiles,
+			globalId:0,
+			lastAttackVictory:false,
+			rollDice:function(numberOfDiceToRoll){
+				var runningTotal = 0;
+				for (var i = numberOfDiceToRoll - 1; i >= 0; i--) {
+					runningTotal += Math.floor(1 + Math.random()*6);
+				};
+				return runningTotal;
+
+			},
+			clearSelection:function(){
+				var target = $('div.tile.selected');
+				target.removeClass('selected');
+				self.selectedTile = null;
+				if(!target.length) return;
+				var targetTop = parseInt(target.css('top').replace('px', '')),
+					targetLeft = parseInt(target.css('left').replace('px', ''));
+				target.css('left', targetLeft+3+'px');
+				target.css('top', targetTop+3+'px');
+			},
+			clicked: function(e, tile){
+				var selectedTile = self.selectedTile;
+				if(e.originalEvent){
+					if(!self.enabled) return;
+					if(!selectedTile && tile.owner != 0) return;
+				} 
+					
+				if(selectedTile && selectedTile != tile){
+					if(selectedTile.hasNeighbour(tile)){
+						if(tile.getColour() === selectedTile.getColour()) {
+							selectedTile.moveStrength(tile);
+						}
+						else{
+							selectedTile.attack(tile);
+						}
+					}
+					return;
+				}
+				if(!selectedTile && tile.strength === 1) return;
+
+				tile.toggleSelection(e);
+			},
+			selectedTile:function(){
+				return self.selectedTile;
+			},
+			setSelectedTile: function(tile){
+				self.selectedTile = tile;
+			},
+			generateTiles: function(imageWidth){
+				var halfCanvasWidth = Math.floor($('.canvas').width()/2),
+					halfCanvasHeight = Math.floor($('.canvas').height()/2),
+					tile = new Tile(halfCanvasHeight, halfCanvasWidth, 0, true, imageWidth, this);
+				tile.append();
+				tile.generateNeighbours();
+
+
+				var enabledTiles = getEnabledTiles();
+				self.maxColours = Math.floor(enabledTiles.length/4);
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(!enabledTiles[i].enabled) continue;
+					var colourObj = getRandomColour([]);
+					enabledTiles[i].conquered(colourObj.colour, colourObj.index);
+				};
+				this.setTileStrengths('purple');
+				this.setTileStrengths('pink');
+				this.setTileStrengths('orange');
+				this.setTileStrengths('green');
+			},
+			setTileStrengths:function(colour){
+				var colouredTiles = this.getAllTilesOfColour(colour);
+				for (var i = colouredTiles.length*5 - 1; i >= 0; i--) {
+					var selectedTile = null;
+					var selectedStrength = 10;
+					var iterations = 0;
+					while(selectedStrength >= 10){
+						if(iterations > 40){
+							throw new Error('attempted to set strength too many times');
+						}
+						selectedTile = this.getRandomTile(colouredTiles);
+						selectedStrength = selectedTile.strength;
+						iterations++;
+					}
+					selectedTile.setStrength(selectedStrength + 1);
+				};
+				for (var i = colouredTiles.length - 1; i >= 0; i--) {
+					var tile = this.findTileBy(colouredTiles[i]);
+					if(!tile.strength){
+						tile.setStrength(1);
+					}
+				}
+			},
+			getRandomTile:function(tiles){
+				return this.findTileBy(tiles[Math.floor(tiles.length * Math.random())]);
+			},
+			findTileBy: function(id){
+				for (var i = self.tiles.length - 1; i >= 0; i--) {
+					if(self.tiles[i].id === id) return self.tiles[i];
+				};
+			},
+			getBlobCountsForColour:function(colour){
+				var colourTileIds = this.getAllTilesOfColour(colour)
+				var blobCounts = [];
+				for (var i = colourTileIds.length - 1; i >= 0; i--) {
+					var tileId = colourTileIds[i];
+					var counted = [tileId];
+					var tile = this.findTileBy(tileId);
+					tile.countAlliedNeighbours(counted)
+					blobCounts.push(counted.length);
+				};
+				return blobCounts.sort(function(a, b){return b-a});
+			},
+			getHomeBlockIds:function(colour){
+				var colourTileIds = this.getAllTilesOfColour(colour)
+				var blocks = [];
+				for (var i = colourTileIds.length - 1; i >= 0; i--) {
+					var tileId = colourTileIds[i];
+					var counted = [tileId];
+					var tile = this.findTileBy(tileId);
+					tile.countAlliedNeighbours(counted)
+					blocks.push(counted);
+				};
+				return blocks.sort(function(a, b){return b.length-a.length})[0];
+			},
+			getHomeBlockFor: function(colour){
+				var homeBlock = [],
+					homeBlockIds = this.getHomeBlockIds(colour);
+				if(!homeBlockIds || homeBlockIds.length <= 0){
+					return homeBlock;
+				}
+				for (var i = homeBlockIds.length - 1; i >= 0; i--) {
+					homeBlock.push(this.findTileBy(homeBlockIds[i]));
+				};
+				return homeBlock;
+			},
+			setBiggestBlobNumbers:function(colours){
+				for (var i = colours.length - 1; i >= 0; i--) {
+					var colour = colours[i];
+					var biggestBlob = this.getBlobCountsForColour(colour)[0];
+					$('.player-list .'+colour + ' span.size').text(biggestBlob);
+				};
+			},
+			setEnabled: function(enabled){
+				self.enabled = enabled;
+			},
+			distributeStrength: function(colour){
+				var reinforcements = parseInt($('.player-list div.'+colour + ' span.size').text());
+				for (var i = reinforcements - 1; i >= 0; i--) {
+					var allTilesForColour = this.getAllTilesOfColour(colour)
+					var tile = this.getRandomTile(allTilesForColour);
+					if(!tile) return;
+					var iterations = 0;
+					while(tile.strength>=10 && iterations < allTilesForColour.length * 2){
+						tile = this.getRandomTile(allTilesForColour)
+						iterations++;
+					}
+
+					if(iterations < allTilesForColour.length * 2) {
+						tile.upgrade(tile.strength + 1, tile.id);
+					}
+				};
+			},
+
+			 getAllTilesOfColour: function(colour){
+				var tileIdsMatchingColour = [],
+					enabledTiles = getEnabledTiles();
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(enabledTiles[i].colour === colour && tileIdsMatchingColour.indexOf(enabledTiles[i].id) === -1){
+						tileIdsMatchingColour.push(enabledTiles[i].id);
+					}
+				};
+				return tileIdsMatchingColour;
+			},
+			resetParticipation:function(){
+				for(var tile in self.participatedTiles){
+					self.participatedTiles[tile].setHasActed(false);
+				}
+				self.participatedTiles = [];
+			},
+			isOver: function(){
+				var enabledTiles = getEnabledTiles(),
+					initialColour = enabledTiles[0].getColour();
+				for (var i = enabledTiles.length - 1; i >= 0; i--) {
+					if(enabledTiles[i].getColour() != initialColour){
+						return false;
+					}
+				};
+				self.enabled = false;
+				return true;
+			},
+			participated:participated
+		};
 	}
 
-	function highlightCurrentPlayer(){
-		$('.players span').css('background', 'white')
-		var currentColour = playerList[currentTurn].colour;
-		$('.players .'+currentColour).css('background', currentColour);
-	}
+	image.onload = function(){
+		var gameBoard = new GameBoard();
+		var turns = new Turns(gameBoard);
+		gameBoard.generateTiles(32);
+		gameBoard.setBiggestBlobNumbers(turns.colours);
+		turns.start();
+	};
 });
